@@ -28,19 +28,19 @@ e.g. →/← for next/previous page, a/z to navigate posts, r to reply, q to quo
 
 # Installation
 ## Firefox
-1. Download the .xpi file from the releases page
+1. Click the [latest .xpi release](https://github.com/28064212/boardsie-enhancement-suite/releases/latest/download/boardsie-enhancement-suite.xpi), and confirm the install. Alternatively, you can download the .xpi file, and install using the following steps
 1. In Firefox, open your "Add-ons and Themes" page (Ctrl+Shift+A, or go to the URL about:addons)
 1. On the "Manage your Extensions" page, click the settings gear-wheel (top right), then "Install Add-on From File..."
 1. Select the downloaded .xpi file
 
 ## Chrome
-1. Download the .zip file from the releases page, and unzip it somewhere (note that the unzipped files will need to stay in place after installation, so choose somewhere permanent)
+1. Download the [latest .zip release](https://github.com/28064212/boardsie-enhancement-suite/releases/latest/download/boardsie-enhancement-suite.zip), and unzip it somewhere (note that the unzipped files will need to stay in place after installation, so choose somewhere permanent)
 1. In Chrome, open your "Extensions" page (Settings => More tools => Extensions, or go to the URL chrome://extensions)
 1. Enable "Developer mode" (top right)
 1. Click on "Load Unpacked" and choose the folder you unzipped the files to
 
 ## Edge
-1. Download the .zip file from the releases page, and unzip it somewhere (note that the unzipped files will need to stay in place after installation, so choose somewhere permanent)
+1. Download the [latest .zip release](https://github.com/28064212/boardsie-enhancement-suite/releases/latest/download/boardsie-enhancement-suite.zip), and unzip it somewhere (note that the unzipped files will need to stay in place after installation, so choose somewhere permanent)
 1. In Edge, open your "Extensions" page (Settings => Extensions, or go to the URL edge://extensions)
 1. Enable "Developer mode" (bottom left)
 1. Click on "Load Unpacked" and choose the folder you unzipped the files to
