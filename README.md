@@ -46,8 +46,16 @@ e.g. →/← for next/previous page, a/z to navigate posts, r to reply, q to quo
 1. Enable "Developer mode" (bottom left)
 1. Click on "Load Unpacked" and choose the folder you unzipped the files to
 
-### Updates
+# Updates
+## Firefox
 The extension will update as per your browser's extension settings (automatically, in most cases)
+
+## Chrome, Edge
+Unfortunately, these browsers do not allow automatic updates of non-store extensions. To update to a new release:
+1. Download the [latest .zip release](https://github.com/28064212/boardsie-enhancement-suite/releases/latest/download/boardsie-enhancement-suite.zip)
+1. Unzip the contents to the same folder that the extension is currently installed in, overwriting any existing files
+1. In your browser, open the Extensions page
+1. In the Boardsie Enhancement Suite section, click the Reload button
 
 # Usage
 The majority of features are applied just by installing the extension. Some less obvious features are explained here.
