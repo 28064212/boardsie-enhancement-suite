@@ -3,6 +3,7 @@ Boardsie Enhancement Suite is an *unofficial* package of modifications designed 
 
 * [Features](#features)
 * [Installation](#installation)
+* [Updates](#updates)
 * [Usage](#usage)
 * [Disclaimers](#disclaimers)
 * [Acknowledgements](#acknowledgements)
