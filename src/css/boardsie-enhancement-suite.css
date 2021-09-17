@@ -156,6 +156,10 @@ header, .BreadcrumbsBox {
 .richEditor-text> :not([contenteditable="false"]) a {
 	text-decoration: underline !important;
 }
+.MessageList.Discussion .ItemComment {
+	/* hides false double-posts */
+	display:none !important;
+}
 
 /* forums */
 
