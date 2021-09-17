@@ -82,6 +82,7 @@ if (window.top == window.self) {
 	removeExternalLinkCheck();
 	addThanksAfterPosts();
 	addThreadPreviews();
+	userHistory();
 	markCategoriesRead(categoriesPromise);
 
 	addBookmarkStatusToComments();
@@ -445,6 +446,60 @@ function removeExternalLinkCheck() {
 			let needle = "/home/leaving?allowTrusted=1&target=";
 			a.href = decodeURIComponent(a.href.substring(a.href.indexOf(needle) + needle.length))
 		}
+	}
+}
+function innerText(string) {
+	let element = document.createElement('div');
+	element.innerHTML = string;
+	element.querySelectorAll('div.js-embed').forEach(node => node.parentElement.removeChild(node))
+	function getTextLoop(element) {
+		const texts = [];
+		Array.from(element.childNodes).forEach(node => {
+			if (node.nodeType === 3)
+				texts.push(node.textContent.trim());
+			else
+				texts.push(...getTextLoop(node));
+		});
+		return texts;
+	}
+	return getTextLoop(element).join(' ');
+}
+function userHistory() {
+	let hash = new URL(window.location).hash;
+	if (hash.indexOf('#bes:') == 0) {
+		let rows = document.querySelectorAll('.forum-threadlist-table tbody tr');
+		for (let r of rows) {
+			r.parentElement.removeChild(r);
+		}
+		let userid = hash.replace('#bes:', '');
+		fetch(api + 'comments?insertUserID=' + userid + '&sort=-dateInserted')
+			.then(response => {
+				if (response.ok)
+					return response.json();
+				else
+					throw new Error(response.statusText);
+			})
+			.then(comments => {
+				let table = document.querySelector('.forum-threadlist-table tbody');
+				let chars = 500;
+				for (let c of comments) {
+					let tr = document.createElement('tr');
+					let td1 = document.createElement('td');
+					let td2 = document.createElement('td');
+					let td3 = document.createElement('td');
+					let td4 = document.createElement('td');
+					let td5 = document.createElement('td');
+					let body = innerText(c.body).trim();
+					td2.textContent = body.substring(0, chars - 1) + (body.length > chars ? '...' : '');
+					tr.appendChild(td1);
+					tr.appendChild(td2);
+					tr.appendChild(td3);
+					tr.appendChild(td4);
+					tr.appendChild(td5);
+					table.appendChild(tr);
+				}
+			})
+			.catch(e => console.log(e))
 	}
 }
 function addThreadPreviews() {
