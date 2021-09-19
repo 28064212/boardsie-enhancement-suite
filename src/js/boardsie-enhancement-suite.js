@@ -82,7 +82,8 @@ if (window.top == window.self) {
 	removeExternalLinkCheck();
 	addThanksAfterPosts();
 	addThreadPreviews();
-	userHistory();
+	userMenus();
+	userHistory(categoriesPromise);
 	markCategoriesRead(categoriesPromise);
 
 	addBookmarkStatusToComments();
@@ -464,42 +465,135 @@ function innerText(string) {
 	}
 	return getTextLoop(element).join(' ');
 }
-function userHistory() {
+function userMenus() {
+	for (let old of document.querySelectorAll('.userinfo-username-title')) {
+		let nu = old.cloneNode(true);
+		nu.classList.remove('userinfo-username-title'); // boards adds eventListener after page load
+		nu.classList.add('usertitle-28064212');
+		old.parentElement.replaceChild(nu, old);
+		let username = nu.textContent;
+
+		let menu = document.createElement('div');
+		menu.classList.add('usermenu-28064212');
+		menu.style.display = 'none';
+		nu.parentElement.parentElement.appendChild(menu);
+
+		let profile = document.createElement('a');
+		profile.textContent = 'View profile';
+		profile.href = '/profile/' + username;
+		menu.appendChild(profile);
+
+		let message = document.createElement('a');
+		message.textContent = 'Message ' + username;
+		message.href = 'https://www.boards.ie/messages/add/' + username;
+		menu.appendChild(message);
+
+		let history = document.createElement('a');
+		history.textContent = 'View all posts';
+		history.href = 'https://www.boards.ie/discussions#bes:' + username;
+		menu.appendChild(history);
+
+		nu.addEventListener("mouseover", function (e) {
+			//hide all menus, show this one
+			document.querySelectorAll('.usermenu-28064212').forEach(m => m.style.display = 'none');
+			menu.style.display = 'block';
+		});
+		menu.addEventListener("mouseleave", function (e) {
+			menu.style.display = 'none';
+		});
+	}
+}
+function userHistory(categoriesPromise) {
 	let hash = new URL(window.location).hash;
 	if (hash.indexOf('#bes:') == 0) {
-		let rows = document.querySelectorAll('.forum-threadlist-table tbody tr');
-		for (let r of rows) {
+		let remove = document.querySelectorAll('.forum-threadlist-table tbody tr, .forum-threadlist-table thead, .BoxNewDiscussion, .PageControls-filters, .HomepageTitle');
+		for (let r of remove) {
 			r.parentElement.removeChild(r);
 		}
-		let userid = hash.replace('#bes:', '');
-		fetch(api + 'comments?insertUserID=' + userid + '&sort=-dateInserted')
-			.then(response => {
-				if (response.ok)
-					return response.json();
-				else
-					throw new Error(response.statusText);
-			})
-			.then(comments => {
-				let table = document.querySelector('.forum-threadlist-table tbody');
-				let chars = 500;
-				for (let c of comments) {
-					let tr = document.createElement('tr');
-					let td1 = document.createElement('td');
-					let td2 = document.createElement('td');
-					let td3 = document.createElement('td');
-					let td4 = document.createElement('td');
-					let td5 = document.createElement('td');
-					let body = innerText(c.body).trim();
-					td2.textContent = body.substring(0, chars - 1) + (body.length > chars ? '...' : '');
-					tr.appendChild(td1);
-					tr.appendChild(td2);
-					tr.appendChild(td3);
-					tr.appendChild(td4);
-					tr.appendChild(td5);
-					table.appendChild(tr);
-				}
-			})
-			.catch(e => console.log(e))
+		let username = hash.replace('#bes:', '');
+		document.querySelector('.forum-threadlist-header').textContent = 'Posts by ' + username;
+		categoriesPromise.then(data => {
+			fetch(api + 'users/by-names?name=' + username)
+				.then(response => {
+					if (response.ok)
+						return response.json();
+					else
+						throw new Error(response.statusText);
+				})
+				.then(users => {
+					let userid = users && users[0] !== undefined ? users[0].userID : null;
+					if (userid) {
+						fetch(api + 'comments?insertUserID=' + userid + '&sort=-dateInserted')
+							.then(response => {
+								if (response.ok)
+									return response.json();
+								else
+									throw new Error(response.statusText);
+							})
+							.then(comments => {
+								let discussionList = [];
+								for (let c of comments)
+									discussionList.push(c.discussionID);
+								fetch(api + 'discussions/?limit=500&discussionID=' + discussionList.join(','))
+									.then(response => {
+										if (response.ok)
+											return response.json();
+										else
+											throw new Error(response.statusText);
+									})
+									.then(discussions => {
+										let table = document.querySelector('.forum-threadlist-table tbody');
+										table.classList.add('userhistory-28064212')
+										let chars = 500;
+										for (let c of comments) {
+											let discussion = discussions.find(item => item.discussionID == c.discussionID);
+											let tr = document.createElement('tr');
+											let td = document.createElement('td');
+											td.classList.add('postbit-postbody');
+											tr.appendChild(td);
+											table.appendChild(tr);
+
+											let text = document.createElement('p');
+											let body = innerText(c.body).trim();
+											text.appendChild(document.createTextNode(body.substring(0, chars - 1) + (body.length > chars ? '...' : '')));
+											td.appendChild(text);
+
+											let meta = document.createElement('p');
+											let timestamp = document.createElement('a');
+											timestamp.href = c.url;
+											let t = new Date(c.dateInserted);
+											let tFormatted = (t.getFullYear().toString() + "-" + ("0" + (t.getMonth() + 1)).slice(-2) + "-" + ("0" + t.getDate()).slice(-2) + " " + ("0" + t.getHours()).slice(-2) + ":" + ("0" + t.getMinutes()).slice(-2));
+											timestamp.appendChild(document.createTextNode(tFormatted));
+											meta.appendChild(timestamp);
+
+											meta.appendChild(document.createTextNode(' in '));
+											let title = document.createElement('a');
+											title.appendChild(document.createTextNode(discussion.name));
+											title.href = discussion.url;
+											meta.appendChild(title);
+
+											meta.appendChild(document.createTextNode(' ['));
+											let cat = data.find(d => d.id == discussion.categoryID)
+											let category = document.createElement('a');
+											category.classList.add('userhistory-category-28064212')
+											category.appendChild(document.createTextNode(cat.name));
+											category.href = cat.url;
+											meta.appendChild(category);
+											meta.appendChild(document.createTextNode(']'));
+
+											if (c.score != null)
+												meta.appendChild(document.createTextNode(' ' + c.score + ' Thanks'));
+
+											td.appendChild(meta);
+										}
+									})
+									.catch(e => console.log(e));
+							})
+							.catch(e => console.log(e));
+					}
+				})
+				.catch(e => console.log(e));
+		});
 	}
 }
 function addThreadPreviews() {
