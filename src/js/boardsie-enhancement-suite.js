@@ -84,6 +84,9 @@ if (window.top == window.self) {
 	addThreadPreviews();
 	userMenus();
 	userHistory(categoriesPromise);
+	window.addEventListener('hashchange', function () {
+		userHistory(categoriesPromise);
+	});
 	markCategoriesRead(categoriesPromise);
 
 	addBookmarkStatusToComments();
@@ -442,10 +445,15 @@ function unboldReadThreads() {
 }
 function removeExternalLinkCheck() {
 	for (let a of document.querySelectorAll('a[href]')) {
-		let url = new URL(a.href);
-		if (url.pathname.indexOf("/home/leaving") == 0 && url.hostname.indexOf('boards.ie') != -1) {
-			let needle = "/home/leaving?allowTrusted=1&target=";
-			a.href = decodeURIComponent(a.href.substring(a.href.indexOf(needle) + needle.length))
+		try {
+			let url = new URL(a.href);
+			if (url.pathname.indexOf("/home/leaving") == 0 && url.hostname.indexOf('boards.ie') != -1) {
+				let needle = "/home/leaving?allowTrusted=1&target=";
+				a.href = decodeURIComponent(a.href.substring(a.href.indexOf(needle) + needle.length))
+			}
+		}
+		catch (e) {
+			console.log(e);
 		}
 	}
 }
@@ -490,7 +498,7 @@ function userMenus() {
 
 		let history = document.createElement('a');
 		history.textContent = 'View all posts';
-		history.href = 'https://www.boards.ie/discussions#bes:' + username;
+		history.href = 'https://www.boards.ie/discussions#bes:' + encodeURIComponent(username);
 		menu.appendChild(history);
 
 		nu.addEventListener("mouseover", function (e) {
@@ -506,12 +514,44 @@ function userMenus() {
 function userHistory(categoriesPromise) {
 	let hash = new URL(window.location).hash;
 	if (hash.indexOf('#bes:') == 0) {
-		let remove = document.querySelectorAll('.forum-threadlist-table tbody tr, .forum-threadlist-table thead, .BoxNewDiscussion, .PageControls-filters, .HomepageTitle');
+		let remove = document.querySelectorAll('.forum-threadlist-table tbody tr, .forum-threadlist-table thead, .BoxNewDiscussion, .PageControls-filters, .HomepageTitle, #PagerBefore, #PagerAfter *');
 		for (let r of remove) {
 			r.parentElement.removeChild(r);
 		}
-		let username = hash.replace('#bes:', '');
+		let params = hash.replace('#bes:', '').split(':');
+		let username = decodeURIComponent(params[0]);
+		let page = params[1] === undefined ? 1 : params[1];
 		document.querySelector('.forum-threadlist-header').textContent = 'Posts by ' + username;
+		document.title = 'Posts by ' + username;
+
+		// pagination
+		let pager = document.querySelector('#PagerAfter');
+		if (page == 1) {
+			let prev = document.createElement('span');
+			prev.textContent = '«';
+			prev.className = 'Previous Pager-nav';
+			prev.setAttribute("aria-disabled", true);
+			pager.appendChild(prev);
+
+			let p1 = document.createElement('a');
+			p1.className = 'Highlight Pager-p p-1 FirstPage';
+			p1.setAttribute("aria-current", 'page');
+			p1.href = '/discussions#bes:' + username;
+			p1.textContent = 1;
+			pager.appendChild(p1);
+
+			for(let i = 2; i <= 10; i++) {
+				// <a href="/discussions/p2" class=" Pager-p p-2" aria-label="Page 2" tabindex="0" rel="next">2</a>
+				let pi = document.createElement('a');
+				pi.href = '/discussions#bes:' + username + ':' + i;
+				pi.className = 'Pager-p p-' + i + (i == 2 ? ' Next' : '');
+				pi.textContent = i;
+				pager.appendChild(pi);
+			}
+		}
+		else {
+		}
+
 		categoriesPromise.then(data => {
 			fetch(api + 'users/by-names?name=' + username)
 				.then(response => {
@@ -523,7 +563,7 @@ function userHistory(categoriesPromise) {
 				.then(users => {
 					let userid = users && users[0] !== undefined ? users[0].userID : null;
 					if (userid) {
-						fetch(api + 'comments?insertUserID=' + userid + '&sort=-dateInserted')
+						fetch(api + 'comments?insertUserID=' + userid + '&sort=-dateInserted&page=' + page)
 							.then(response => {
 								if (response.ok)
 									return response.json();

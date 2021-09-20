@@ -94,6 +94,7 @@ header, .BreadcrumbsBox {
 	background-color: var(--bg);
 	padding: 0px;
 	border: 1px solid rgb(59, 85, 134);
+	z-index: 1000;
 }
 .usermenu-28064212 a {
 	padding: 10px;
@@ -108,6 +109,10 @@ header, .BreadcrumbsBox {
 }
 .usermenu-28064212 a:not(:last-of-type) {
 	border-bottom: 1px solid rgb(59, 85, 134);
+}
+.postbit-wrapper {
+	/* displays usermenu in front of following post */
+	overflow: visible !important;
 }
 .ProfilePhotoLarge {
 	float: right !important;
