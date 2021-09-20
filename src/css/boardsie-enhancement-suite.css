@@ -83,6 +83,38 @@ header, .BreadcrumbsBox {
 .userinfo-username {
 	float: left !important;
 }
+.usertitle-28064212 {
+	font-size: 13px;
+	font-weight: bold;
+	overflow-wrap: break-word;
+	white-space: normal;
+	color: rgb(59, 85, 134);
+}
+.usermenu-28064212 {
+	position: absolute;
+	background-color: var(--bg);
+	padding: 0px;
+	border: 1px solid rgb(59, 85, 134);
+	z-index: 1000;
+}
+.usermenu-28064212 a {
+	padding: 10px;
+	display: block !important;
+	max-width: none !important;
+	color: var(--fg-link) !important;
+}
+.usermenu-28064212 a:hover {
+	background-color: rgb(59, 85, 134);
+	color: white !important;
+	text-decoration: none !important;
+}
+.usermenu-28064212 a:not(:last-of-type) {
+	border-bottom: 1px solid rgb(59, 85, 134);
+}
+.postbit-wrapper {
+	/* displays usermenu in front of following post */
+	overflow: visible !important;
+}
 .ProfilePhotoLarge {
 	float: right !important;
 	margin: 0 !important;
@@ -439,7 +471,7 @@ body {
 	padding-right: 5px;
 	border-radius: 5px;
 }
-.original-poster-28064212, .original-poster-28064212 .userinfo-username-title {
+.original-poster-28064212, .original-poster-28064212 .usertitle-28064212 {
 	background-color: rgb(59, 85, 134) !important;
 	color: white !important;
 }
@@ -526,6 +558,18 @@ body {
 	transition: opacity 2000ms linear;
 }
 
+/* user history */
+
+.userhistory-28064212 p:first-of-type {
+	margin-bottom: 10px !important;
+}
+.userhistory-28064212 a {
+	font-size: unset !important;
+}
+.userhistory-category-28064212 {
+	font-style: italic;
+}
+
 /* dark mode */
 
 body {
@@ -551,8 +595,7 @@ body .Reactions span, body .Reactions a {
 	background: var(--bg) !important;
 	color: var(--fg) !important;
 }
-.Reactions .ReactButton.Quote:hover, .Reactions .ReactButton.ReactButton-Like:hover, .Reactions .FlagMenu.ToggleFlyout:hover,
-.Reactions .ReactButton.Quote:hover *, .Reactions .ReactButton.ReactButton-Like:hover *, .Reactions .FlagMenu.ToggleFlyout:hover * {
+.Reactions .ReactButton.Quote:hover, .Reactions .ReactButton.ReactButton-Like:hover, .Reactions .FlagMenu.ToggleFlyout:hover, .Reactions .ReactButton.Quote:hover *, .Reactions .ReactButton.ReactButton-Like:hover *, .Reactions .FlagMenu.ToggleFlyout:hover * {
 	background: var(--fg-link) !important;
 	color: white !important;
 }
@@ -564,7 +607,7 @@ body[data-theme='dark'] .embedExternal, body[data-theme='dark'] .embedExternal [
 	background-color: var(--bg-quotes) !important;
 	color: var(--fg) !important;
 }
-body[data-theme='dark'] a, body[data-theme='dark'] a:not(.original-poster-28064212) .userinfo-username-title {
+body[data-theme='dark'] a, body[data-theme='dark'] a:not(.original-poster-28064212) .usertitle-28064212 {
 	color: var(--fg-link) !important;
 }
 body[data-theme='dark'] td, body[data-theme='dark'] table {

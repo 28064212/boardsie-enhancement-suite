@@ -82,6 +82,11 @@ if (window.top == window.self) {
 	removeExternalLinkCheck();
 	addThanksAfterPosts();
 	addThreadPreviews();
+	userMenus();
+	userHistory(categoriesPromise);
+	window.addEventListener('hashchange', function () {
+		userHistory(categoriesPromise);
+	});
 	markCategoriesRead(categoriesPromise);
 
 	addBookmarkStatusToComments();
@@ -440,11 +445,248 @@ function unboldReadThreads() {
 }
 function removeExternalLinkCheck() {
 	for (let a of document.querySelectorAll('a[href]')) {
-		let url = new URL(a.href);
-		if (url.pathname.indexOf("/home/leaving") == 0 && url.hostname.indexOf('boards.ie') != -1) {
-			let needle = "/home/leaving?allowTrusted=1&target=";
-			a.href = decodeURIComponent(a.href.substring(a.href.indexOf(needle) + needle.length))
+		try {
+			let url = new URL(a.href);
+			if (url.pathname.indexOf("/home/leaving") == 0 && url.hostname.indexOf('boards.ie') != -1) {
+				let needle = "/home/leaving?allowTrusted=1&target=";
+				a.href = decodeURIComponent(a.href.substring(a.href.indexOf(needle) + needle.length))
+			}
 		}
+		catch (e) {
+			console.log(e);
+		}
+	}
+}
+function innerText(string) {
+	let element = document.createElement('div');
+	element.innerHTML = string;
+	element.querySelectorAll('div.js-embed').forEach(node => node.parentElement.removeChild(node))
+	function getTextLoop(element) {
+		const texts = [];
+		Array.from(element.childNodes).forEach(node => {
+			if (node.nodeType === 3)
+				texts.push(node.textContent.trim());
+			else
+				texts.push(...getTextLoop(node));
+		});
+		return texts;
+	}
+	return getTextLoop(element).join(' ');
+}
+function userMenus() {
+	for (let old of document.querySelectorAll('.userinfo-username-title')) {
+		let nu = old.cloneNode(true);
+		nu.classList.remove('userinfo-username-title'); // boards adds eventListener after page load
+		nu.classList.add('usertitle-28064212');
+		old.parentElement.replaceChild(nu, old);
+		let username = nu.textContent;
+
+		let menu = document.createElement('div');
+		menu.classList.add('usermenu-28064212');
+		menu.style.display = 'none';
+		nu.parentElement.parentElement.appendChild(menu);
+
+		let profile = document.createElement('a');
+		profile.textContent = 'View profile';
+		profile.href = '/profile/' + username;
+		menu.appendChild(profile);
+
+		let message = document.createElement('a');
+		message.textContent = 'Message ' + username;
+		message.href = 'https://www.boards.ie/messages/add/' + username;
+		menu.appendChild(message);
+
+		let history = document.createElement('a');
+		history.textContent = 'View all posts';
+		history.href = 'https://www.boards.ie/discussions#bes:' + encodeURIComponent(username);
+		menu.appendChild(history);
+
+		nu.addEventListener("mouseover", function (e) {
+			//hide all menus, show this one
+			document.querySelectorAll('.usermenu-28064212').forEach(m => m.style.display = 'none');
+			menu.style.display = 'block';
+		});
+		menu.addEventListener("mouseleave", function (e) {
+			menu.style.display = 'none';
+		});
+	}
+}
+function userHistory(categoriesPromise) {
+	let hash = new URL(window.location).hash;
+	if (hash.indexOf('#bes:') == 0) {
+		let remove = document.querySelectorAll('.forum-threadlist-table tbody tr, .forum-threadlist-table thead, .BoxNewDiscussion, .PageControls-filters, .HomepageTitle, #PagerBefore *, #PagerAfter *');
+		for (let r of remove) {
+			r.parentElement.removeChild(r);
+		}
+		let params = hash.replace('#bes:', '').split(':');
+		let username = decodeURIComponent(params[0]);
+		let page = params[1] === undefined ? 1 : parseInt(params[1]);
+		document.querySelector('.forum-threadlist-header').textContent = 'Posts by ' + username;
+		document.title = 'Posts by ' + username;
+
+		let table = document.querySelector('.forum-threadlist-table tbody');
+		table.classList.add('userhistory-28064212');
+		let loadingRow = document.createElement('tr');
+		let loadingCell = document.createElement('td');
+		loadingCell.classList.add('postbit-postbody');
+		loadingRow.appendChild(loadingCell);
+		table.appendChild(loadingRow);
+
+		let loadingText = document.createElement('p');
+		loadingText.style.fontStyle = 'italic';
+		loadingText.appendChild(document.createTextNode('Loading...'));
+		loadingCell.appendChild(loadingText);
+
+		// pagination
+		let pagerBefore = document.querySelector('#PagerBefore');
+		let pagerAfter = document.querySelector('#PagerAfter');
+
+		let current = document.createElement('a');
+		current.className = 'Pager-p p-1 FirstPage';
+		current.setAttribute("aria-current", 'page');
+		current.classList.add("Highlight");
+		current.href = '/discussions#bes:' + encodeURIComponent(username);
+		current.textContent = page;
+		pagerBefore.appendChild(current);
+		let currentAfter = current.cloneNode(true);
+		pagerAfter.appendChild(currentAfter);
+
+		//before current
+		for (let i = (page - 1); i >= 1 && i >= (page - 5); i--) {
+			let pi = document.createElement('a');
+			pi.href = '/discussions#bes:' + encodeURIComponent(username) + ':' + i;
+			pi.className = 'Pager-p p-' + i;
+			pi.textContent = i;
+			pagerBefore.insertBefore(pi, pagerBefore.firstElementChild);
+			pagerAfter.insertBefore(pi.cloneNode(true), pagerAfter.firstElementChild);
+		}
+		//after current
+		for (let i = page + 1; i <= (page + 5); i++) {
+			let pi = document.createElement('a');
+			pi.href = '/discussions#bes:' + encodeURIComponent(username) + ':' + i;
+			pi.className = 'Pager-p p-' + i;
+			pi.textContent = i;
+			pagerBefore.appendChild(pi);
+			pagerAfter.appendChild(pi.cloneNode(true));
+		}
+
+		let prev = document.createElement('a');
+		prev.textContent = '«';
+		if (page == 1) {
+			prev.setAttribute("aria-disabled", true);
+			prev.classList.add("Highlight");
+		}
+		else {
+			prev.className = 'Previous';
+			prev.href = '/discussions#bes:' + encodeURIComponent(username) + ':' + (page - 1);
+		}
+		pagerBefore.insertBefore(prev, pagerBefore.firstElementChild);
+		pagerAfter.insertBefore(prev.cloneNode(true), pagerAfter.firstElementChild);
+
+		let next = document.createElement('a');
+		next.textContent = '»';
+		next.className = 'Next';
+		next.href = '/discussions#bes:' + encodeURIComponent(username) + ':' + (page + 1);
+		pagerBefore.appendChild(next);
+		pagerAfter.appendChild(next.cloneNode(true));
+
+		categoriesPromise.then(data => {
+			fetch(api + 'users/by-names?name=' + username)
+				.then(response => {
+					if (response.ok)
+						return response.json();
+					else
+						throw new Error(response.statusText);
+				})
+				.then(users => {
+					let userid = users && users[0] !== undefined ? users[0].userID : null;
+					if (userid) {
+						fetch(api + 'comments?insertUserID=' + userid + '&sort=-dateInserted&page=' + page)
+							.then(response => {
+								if (response.ok)
+									return response.json();
+								else
+									throw new Error(response.statusText);
+							})
+							.then(comments => {
+								if (comments.length == 0) {
+									loadingRow.parentElement.removeChild(loadingRow);
+									let tr = document.createElement('tr');
+									let td = document.createElement('td');
+									td.classList.add('postbit-postbody');
+									tr.appendChild(td);
+									table.appendChild(tr);
+
+									let text = document.createElement('p');
+									text.appendChild(document.createTextNode('[No posts found]'));
+									td.appendChild(text);
+								}
+								else {
+									let chars = 500;
+									let discussionList = [];
+									for (let c of comments)
+										discussionList.push(c.discussionID);
+									fetch(api + 'discussions/?limit=500&discussionID=' + discussionList.join(','))
+										.then(response => {
+											if (response.ok)
+												return response.json();
+											else
+												throw new Error(response.statusText);
+										})
+										.then(discussions => {
+											loadingRow.parentElement.removeChild(loadingRow);
+											for (let c of comments) {
+												let discussion = discussions.find(item => item.discussionID == c.discussionID);
+												let tr = document.createElement('tr');
+												let td = document.createElement('td');
+												td.classList.add('postbit-postbody');
+												tr.appendChild(td);
+												table.appendChild(tr);
+
+												let text = document.createElement('p');
+												let body = innerText(c.body).trim();
+												text.appendChild(document.createTextNode(body.substring(0, chars - 1) + (body.length > chars ? '...' : '')));
+												td.appendChild(text);
+
+												let meta = document.createElement('p');
+												let timestamp = document.createElement('a');
+												timestamp.href = c.url;
+												let t = new Date(c.dateInserted);
+												let tFormatted = (t.getFullYear().toString() + "-" + ("0" + (t.getMonth() + 1)).slice(-2) + "-" + ("0" + t.getDate()).slice(-2) + " " + ("0" + t.getHours()).slice(-2) + ":" + ("0" + t.getMinutes()).slice(-2));
+												timestamp.appendChild(document.createTextNode(tFormatted));
+												meta.appendChild(timestamp);
+
+												meta.appendChild(document.createTextNode(' in '));
+												let title = document.createElement('a');
+												title.appendChild(document.createTextNode(discussion.name));
+												title.href = discussion.url;
+												meta.appendChild(title);
+
+												meta.appendChild(document.createTextNode(' ['));
+												let cat = data.find(d => d.id == discussion.categoryID)
+												let category = document.createElement('a');
+												category.classList.add('userhistory-category-28064212')
+												category.appendChild(document.createTextNode(cat.name));
+												category.href = cat.url;
+												meta.appendChild(category);
+												meta.appendChild(document.createTextNode(']'));
+
+												if (c.score != null)
+													meta.appendChild(document.createTextNode(' ' + c.score + ' Thanks'));
+
+												td.appendChild(meta);
+											}
+										})
+										.catch(e => console.log(e));
+								}
+							})
+							.catch(e => console.log(e));
+					}
+					else
+						loadingCell.textContent = '[User not found]';
+				})
+				.catch(e => console.log(e));
+		});
 	}
 }
 function addThreadPreviews() {
