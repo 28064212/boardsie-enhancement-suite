@@ -514,43 +514,81 @@ function userMenus() {
 function userHistory(categoriesPromise) {
 	let hash = new URL(window.location).hash;
 	if (hash.indexOf('#bes:') == 0) {
-		let remove = document.querySelectorAll('.forum-threadlist-table tbody tr, .forum-threadlist-table thead, .BoxNewDiscussion, .PageControls-filters, .HomepageTitle, #PagerBefore, #PagerAfter *');
+		let remove = document.querySelectorAll('.forum-threadlist-table tbody tr, .forum-threadlist-table thead, .BoxNewDiscussion, .PageControls-filters, .HomepageTitle, #PagerBefore *, #PagerAfter *');
 		for (let r of remove) {
 			r.parentElement.removeChild(r);
 		}
 		let params = hash.replace('#bes:', '').split(':');
 		let username = decodeURIComponent(params[0]);
-		let page = params[1] === undefined ? 1 : params[1];
+		let page = params[1] === undefined ? 1 : parseInt(params[1]);
 		document.querySelector('.forum-threadlist-header').textContent = 'Posts by ' + username;
 		document.title = 'Posts by ' + username;
 
+		let table = document.querySelector('.forum-threadlist-table tbody');
+		table.classList.add('userhistory-28064212');
+		let loadingRow = document.createElement('tr');
+		let loadingCell = document.createElement('td');
+		loadingCell.classList.add('postbit-postbody');
+		loadingRow.appendChild(loadingCell);
+		table.appendChild(loadingRow);
+
+		let loadingText = document.createElement('p');
+		loadingText.style.fontStyle = 'italic';
+		loadingText.appendChild(document.createTextNode('Loading...'));
+		loadingCell.appendChild(loadingText);
+
 		// pagination
-		let pager = document.querySelector('#PagerAfter');
+		let pagerBefore = document.querySelector('#PagerBefore');
+		let pagerAfter = document.querySelector('#PagerAfter');
+
+		let current = document.createElement('a');
+		current.className = 'Pager-p p-1 FirstPage';
+		current.setAttribute("aria-current", 'page');
+		current.classList.add("Highlight");
+		current.href = '/discussions#bes:' + username;
+		current.textContent = page;
+		pagerBefore.appendChild(current);
+		let currentAfter = current.cloneNode(true);
+		pagerAfter.appendChild(currentAfter);
+
+		//before current
+		for (let i = (page - 1); i >= 1 && i >= (page - 5); i--) {
+			let pi = document.createElement('a');
+			pi.href = '/discussions#bes:' + username + ':' + i;
+			pi.className = 'Pager-p p-' + i;
+			pi.textContent = i;
+			pagerBefore.insertBefore(pi, pagerBefore.firstElementChild);
+			pagerAfter.insertBefore(pi.cloneNode(true), pagerAfter.firstElementChild);
+		}
+		//after current
+		for (let i = page + 1; i <= (page + 5); i++) {
+			let pi = document.createElement('a');
+			pi.href = '/discussions#bes:' + username + ':' + i;
+			pi.className = 'Pager-p p-' + i;
+			pi.textContent = i;
+			pagerBefore.appendChild(pi);
+			pagerAfter.appendChild(pi.cloneNode(true));
+		}
+
+		let prev = document.createElement('a');
+		prev.textContent = '«';
 		if (page == 1) {
-			let prev = document.createElement('span');
-			prev.textContent = '«';
-			prev.className = 'Previous Pager-nav';
 			prev.setAttribute("aria-disabled", true);
-			pager.appendChild(prev);
-
-			let p1 = document.createElement('a');
-			p1.className = 'Highlight Pager-p p-1 FirstPage';
-			p1.setAttribute("aria-current", 'page');
-			p1.href = '/discussions#bes:' + username;
-			p1.textContent = 1;
-			pager.appendChild(p1);
-
-			for(let i = 2; i <= 10; i++) {
-				// <a href="/discussions/p2" class=" Pager-p p-2" aria-label="Page 2" tabindex="0" rel="next">2</a>
-				let pi = document.createElement('a');
-				pi.href = '/discussions#bes:' + username + ':' + i;
-				pi.className = 'Pager-p p-' + i + (i == 2 ? ' Next' : '');
-				pi.textContent = i;
-				pager.appendChild(pi);
-			}
+			prev.classList.add("Highlight");
 		}
 		else {
+			prev.className = 'Previous';
+			prev.href = '/discussions#bes:' + username + ':' + (page - 1);
 		}
+		pagerBefore.insertBefore(prev, pagerBefore.firstElementChild);
+		pagerAfter.insertBefore(prev.cloneNode(true), pagerAfter.firstElementChild);
+
+		let next = document.createElement('a');
+		next.textContent = '»';
+		next.className = 'Next';
+		next.href = '/discussions#bes:' + username + ':' + (page + 1);
+		pagerBefore.appendChild(next);
+		pagerAfter.appendChild(next.cloneNode(true));
 
 		categoriesPromise.then(data => {
 			fetch(api + 'users/by-names?name=' + username)
@@ -571,63 +609,76 @@ function userHistory(categoriesPromise) {
 									throw new Error(response.statusText);
 							})
 							.then(comments => {
-								let discussionList = [];
-								for (let c of comments)
-									discussionList.push(c.discussionID);
-								fetch(api + 'discussions/?limit=500&discussionID=' + discussionList.join(','))
-									.then(response => {
-										if (response.ok)
-											return response.json();
-										else
-											throw new Error(response.statusText);
-									})
-									.then(discussions => {
-										let table = document.querySelector('.forum-threadlist-table tbody');
-										table.classList.add('userhistory-28064212')
-										let chars = 500;
-										for (let c of comments) {
-											let discussion = discussions.find(item => item.discussionID == c.discussionID);
-											let tr = document.createElement('tr');
-											let td = document.createElement('td');
-											td.classList.add('postbit-postbody');
-											tr.appendChild(td);
-											table.appendChild(tr);
+								if (comments.length == 0) {
+									loadingRow.parentElement.removeChild(loadingRow);
+									let tr = document.createElement('tr');
+									let td = document.createElement('td');
+									td.classList.add('postbit-postbody');
+									tr.appendChild(td);
+									table.appendChild(tr);
 
-											let text = document.createElement('p');
-											let body = innerText(c.body).trim();
-											text.appendChild(document.createTextNode(body.substring(0, chars - 1) + (body.length > chars ? '...' : '')));
-											td.appendChild(text);
+									let text = document.createElement('p');
+									text.appendChild(document.createTextNode('[No posts found]'));
+									td.appendChild(text);
+								}
+								else {
+									let chars = 500;
+									let discussionList = [];
+									for (let c of comments)
+										discussionList.push(c.discussionID);
+									fetch(api + 'discussions/?limit=500&discussionID=' + discussionList.join(','))
+										.then(response => {
+											if (response.ok)
+												return response.json();
+											else
+												throw new Error(response.statusText);
+										})
+										.then(discussions => {
+											loadingRow.parentElement.removeChild(loadingRow);
+											for (let c of comments) {
+												let discussion = discussions.find(item => item.discussionID == c.discussionID);
+												let tr = document.createElement('tr');
+												let td = document.createElement('td');
+												td.classList.add('postbit-postbody');
+												tr.appendChild(td);
+												table.appendChild(tr);
 
-											let meta = document.createElement('p');
-											let timestamp = document.createElement('a');
-											timestamp.href = c.url;
-											let t = new Date(c.dateInserted);
-											let tFormatted = (t.getFullYear().toString() + "-" + ("0" + (t.getMonth() + 1)).slice(-2) + "-" + ("0" + t.getDate()).slice(-2) + " " + ("0" + t.getHours()).slice(-2) + ":" + ("0" + t.getMinutes()).slice(-2));
-											timestamp.appendChild(document.createTextNode(tFormatted));
-											meta.appendChild(timestamp);
+												let text = document.createElement('p');
+												let body = innerText(c.body).trim();
+												text.appendChild(document.createTextNode(body.substring(0, chars - 1) + (body.length > chars ? '...' : '')));
+												td.appendChild(text);
 
-											meta.appendChild(document.createTextNode(' in '));
-											let title = document.createElement('a');
-											title.appendChild(document.createTextNode(discussion.name));
-											title.href = discussion.url;
-											meta.appendChild(title);
+												let meta = document.createElement('p');
+												let timestamp = document.createElement('a');
+												timestamp.href = c.url;
+												let t = new Date(c.dateInserted);
+												let tFormatted = (t.getFullYear().toString() + "-" + ("0" + (t.getMonth() + 1)).slice(-2) + "-" + ("0" + t.getDate()).slice(-2) + " " + ("0" + t.getHours()).slice(-2) + ":" + ("0" + t.getMinutes()).slice(-2));
+												timestamp.appendChild(document.createTextNode(tFormatted));
+												meta.appendChild(timestamp);
 
-											meta.appendChild(document.createTextNode(' ['));
-											let cat = data.find(d => d.id == discussion.categoryID)
-											let category = document.createElement('a');
-											category.classList.add('userhistory-category-28064212')
-											category.appendChild(document.createTextNode(cat.name));
-											category.href = cat.url;
-											meta.appendChild(category);
-											meta.appendChild(document.createTextNode(']'));
+												meta.appendChild(document.createTextNode(' in '));
+												let title = document.createElement('a');
+												title.appendChild(document.createTextNode(discussion.name));
+												title.href = discussion.url;
+												meta.appendChild(title);
 
-											if (c.score != null)
-												meta.appendChild(document.createTextNode(' ' + c.score + ' Thanks'));
+												meta.appendChild(document.createTextNode(' ['));
+												let cat = data.find(d => d.id == discussion.categoryID)
+												let category = document.createElement('a');
+												category.classList.add('userhistory-category-28064212')
+												category.appendChild(document.createTextNode(cat.name));
+												category.href = cat.url;
+												meta.appendChild(category);
+												meta.appendChild(document.createTextNode(']'));
 
-											td.appendChild(meta);
-										}
-									})
-									.catch(e => console.log(e));
+												if (c.score != null)
+													meta.appendChild(document.createTextNode(' ' + c.score + ' Thanks'));
+
+												td.appendChild(meta);
+											}
+										})
+										.catch(e => console.log(e));
+								}
 							})
 							.catch(e => console.log(e));
 					}

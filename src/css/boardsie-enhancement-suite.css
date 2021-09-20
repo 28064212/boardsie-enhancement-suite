@@ -87,6 +87,7 @@ header, .BreadcrumbsBox {
 	font-size: 13px;
 	font-weight: bold;
 	overflow-wrap: break-word;
+	white-space: normal;
 	color: rgb(59, 85, 134);
 }
 .usermenu-28064212 {
