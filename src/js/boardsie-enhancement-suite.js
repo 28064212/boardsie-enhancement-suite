@@ -545,7 +545,7 @@ function userHistory(categoriesPromise) {
 		current.className = 'Pager-p p-1 FirstPage';
 		current.setAttribute("aria-current", 'page');
 		current.classList.add("Highlight");
-		current.href = '/discussions#bes:' + username;
+		current.href = '/discussions#bes:' + encodeURIComponent(username);
 		current.textContent = page;
 		pagerBefore.appendChild(current);
 		let currentAfter = current.cloneNode(true);
@@ -554,7 +554,7 @@ function userHistory(categoriesPromise) {
 		//before current
 		for (let i = (page - 1); i >= 1 && i >= (page - 5); i--) {
 			let pi = document.createElement('a');
-			pi.href = '/discussions#bes:' + username + ':' + i;
+			pi.href = '/discussions#bes:' + encodeURIComponent(username) + ':' + i;
 			pi.className = 'Pager-p p-' + i;
 			pi.textContent = i;
 			pagerBefore.insertBefore(pi, pagerBefore.firstElementChild);
@@ -563,7 +563,7 @@ function userHistory(categoriesPromise) {
 		//after current
 		for (let i = page + 1; i <= (page + 5); i++) {
 			let pi = document.createElement('a');
-			pi.href = '/discussions#bes:' + username + ':' + i;
+			pi.href = '/discussions#bes:' + encodeURIComponent(username) + ':' + i;
 			pi.className = 'Pager-p p-' + i;
 			pi.textContent = i;
 			pagerBefore.appendChild(pi);
@@ -578,7 +578,7 @@ function userHistory(categoriesPromise) {
 		}
 		else {
 			prev.className = 'Previous';
-			prev.href = '/discussions#bes:' + username + ':' + (page - 1);
+			prev.href = '/discussions#bes:' + encodeURIComponent(username) + ':' + (page - 1);
 		}
 		pagerBefore.insertBefore(prev, pagerBefore.firstElementChild);
 		pagerAfter.insertBefore(prev.cloneNode(true), pagerAfter.firstElementChild);
@@ -586,7 +586,7 @@ function userHistory(categoriesPromise) {
 		let next = document.createElement('a');
 		next.textContent = '»';
 		next.className = 'Next';
-		next.href = '/discussions#bes:' + username + ':' + (page + 1);
+		next.href = '/discussions#bes:' + encodeURIComponent(username) + ':' + (page + 1);
 		pagerBefore.appendChild(next);
 		pagerAfter.appendChild(next.cloneNode(true));
 
@@ -682,6 +682,8 @@ function userHistory(categoriesPromise) {
 							})
 							.catch(e => console.log(e));
 					}
+					else
+						loadingCell.textContent = '[User not found]';
 				})
 				.catch(e => console.log(e));
 		});
