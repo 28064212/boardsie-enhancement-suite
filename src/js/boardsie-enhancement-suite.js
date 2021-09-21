@@ -34,11 +34,15 @@ if (window.top == window.self) {
 			settings.keyboard = true;
 		if (settings.darkmode === undefined)
 			settings.darkmode = false;
+		if (settings.stickyheader === undefined)
+			settings.stickyheader = false;
 
 		if (settings.keyboard)
 			window.addEventListener('keydown', keyShortcuts, true);
 		if (settings.darkmode)
 			document.body.dataset.theme = 'dark';
+		if (settings.stickyheader)
+			document.body.dataset.stickyheader = '';
 		if (document.querySelector('#Form_Bookmarked') && settings.autobookmark == false)
 			document.querySelector('#Form_Bookmarked').checked = false;
 		await browser.storage.sync.set({ "settings": settings });
@@ -162,6 +166,7 @@ function settingsModal() {
 		behaviours.id = "settings-behaviours-28064212";
 		content.appendChild(behaviours);
 		behaviours.innerHTML += '<p><input type="checkbox" id="settings-darkmode-28064212" /><label for="settings-darkmode-28064212">Dark Mode</label></p>';
+		behaviours.innerHTML += '<p><input type="checkbox" id="settings-stickyheader-28064212" /><label for="settings-stickyheader-28064212">Sticky Header</label></p>';
 		behaviours.innerHTML += '<p><input type="checkbox" id="settings-autobookmark-28064212" /><label for="settings-autobookmark-28064212">Automatically set "Bookmark this discussion"</label></p>';
 		behaviours.innerHTML += '<p><input type="checkbox" id="settings-keyboard-28064212" /><label for="settings-keyboard-28064212">Enable keyboard shortcuts</label></p>';
 
@@ -185,6 +190,17 @@ function settingsModal() {
 				document.body.dataset.theme = 'dark';
 			else
 				delete document.body.dataset.theme;
+			await browser.storage.sync.set({ "settings": settings });
+		});
+
+		let stickyheader = behaviours.querySelector('#settings-stickyheader-28064212');
+		stickyheader.checked = settings.stickyheader;
+		stickyheader.addEventListener('change', async function (e) {
+			settings.stickyheader = stickyheader.checked;
+			if (settings.stickyheader)
+				document.body.dataset.stickyheader = '';
+			else
+				delete document.body.dataset.stickyheader;
 			await browser.storage.sync.set({ "settings": settings });
 		});
 
