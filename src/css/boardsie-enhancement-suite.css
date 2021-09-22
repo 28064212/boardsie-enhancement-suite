@@ -1,12 +1,5 @@
-header, .BreadcrumbsBox {
-	position: static !important
-}
 #themeHeader {
 	display: none !important;
-}
-.Frame-content, .Breadcrumbs, .Frame-content .Container {
-	margin-top: 0 !important;
-	margin-bottom: 0 !important;
 }
 [class$="container-fullGutter"], .BreadcrumbsBox .Breadcrumbs {
 	max-width: unset !important;
@@ -388,7 +381,7 @@ body {
 /* categories */
 
 #categories-28064212 {
-	position: absolute;
+	position: fixed;
 	top: 47px;
 	left: 5vw;
 	width: 90vw;
@@ -398,6 +391,8 @@ body {
 	border-radius: 5px;
 	padding: 10px;
 	border: 1px solid rgb(59, 85, 134);
+	max-height: 85vh;
+	overflow-y: auto;
 }
 #categories-28064212 a {
 	display: block;
@@ -568,6 +563,21 @@ body {
 }
 .userhistory-category-28064212 {
 	font-style: italic;
+}
+
+/* sticky header */
+body:not([data-stickyheader]) header, body:not([data-stickyheader]) .BreadcrumbsBox {
+	position: static !important
+}
+body:not([data-stickyheader]) .Frame-content, body:not([data-stickyheader]) .Breadcrumbs, body:not([data-stickyheader]) .Frame-content .Container {
+	margin-top: 0 !important;
+	margin-bottom: 0 !important;
+}
+body[data-stickyheader] #titleBar {
+	top: 0 !important;
+}
+body[data-stickyheader] .BreadcrumbsBox {
+	top: 48px !important;
 }
 
 /* dark mode */
