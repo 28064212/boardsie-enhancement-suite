@@ -163,7 +163,7 @@ function settingsModal() {
 		content.appendChild(behaviours);
 		behaviours.innerHTML += '<p><input type="checkbox" id="settings-darkmode-28064212" /><label for="settings-darkmode-28064212">Dark Mode</label></p>';
 		behaviours.innerHTML += '<p><input type="checkbox" id="settings-autobookmark-28064212" /><label for="settings-autobookmark-28064212">Automatically set "Bookmark this discussion"</label></p>';
-		behaviours.innerHTML += '<p><input type="checkbox" id="settings-keyboard-28064212" /><label for="settings-keyboard-28064212">Enable keyboard shortcuts</label></p>';
+		behaviours.innerHTML += '<p><input type="checkbox" id="settings-keyboard-28064212" /><label for="settings-keyboard-28064212">Keyboard shortcuts</label></p>';
 
 		let keyboard = behaviours.querySelector('#settings-keyboard-28064212');
 		keyboard.checked = settings.keyboard;
