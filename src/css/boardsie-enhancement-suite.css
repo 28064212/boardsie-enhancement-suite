@@ -149,8 +149,21 @@
 	position: unset !important;
 	float: right !important;
 }
-.Reactions .ReactButton.Quote, .Reactions .ReactButton.ReactButton-Like, .Reactions .FlagMenu.ToggleFlyout {
-	border-radius: 4px;
+.reactions-28064212 {
+	height: 30px !important;
+	border: 1px solid #d8d8d8;
+	display: flex !important;
+	justify-content: center !important;
+	margin: 4px !important;
+	font-size: 12px;
+	line-height: 18px;
+	align-items: center;
+}
+.Reactions .ReactButton.Quote, .Reactions .ReactButton.ReactButton-Like, .Reactions .FlagMenu.ToggleFlyout, .reactions-28064212 {
+	border-radius: 4px !important;
+	width: auto !important;
+	padding-left: 10px !important;
+	padding-right: 10px !important;
 }
 .postbit-postbody .clearleft {
 	clear: both !important;
@@ -181,9 +194,12 @@
 .richEditor-text> :not([contenteditable="false"]) a {
 	text-decoration: underline !important;
 }
+.richEditor .blockquote-content p:not(:last-of-type) {
+	margin-bottom: 10px;
+}
 .MessageList.Discussion .ItemComment {
 	/* hides false double-posts */
-	display:none !important;
+	display: none !important;
 }
 
 /* forums */
@@ -566,6 +582,7 @@ body {
 }
 
 /* sticky header */
+
 body:not([data-stickyheader]) header, body:not([data-stickyheader]) .BreadcrumbsBox {
 	position: static !important
 }
@@ -605,7 +622,7 @@ body .Reactions span, body .Reactions a {
 	background: var(--bg) !important;
 	color: var(--fg) !important;
 }
-.Reactions .ReactButton.Quote:hover, .Reactions .ReactButton.ReactButton-Like:hover, .Reactions .FlagMenu.ToggleFlyout:hover, .Reactions .ReactButton.Quote:hover *, .Reactions .ReactButton.ReactButton-Like:hover *, .Reactions .FlagMenu.ToggleFlyout:hover * {
+.Reactions .ReactButton.Quote:hover, .Reactions .ReactButton.ReactButton-Like:hover, .Reactions .FlagMenu.ToggleFlyout:hover, .reactions-28064212:hover, .Reactions .ReactButton.Quote:hover *, .Reactions .ReactButton.ReactButton-Like:hover *, .Reactions .FlagMenu.ToggleFlyout:hover *, .reactions-28064212:hover * {
 	background: var(--fg-link) !important;
 	color: white !important;
 }

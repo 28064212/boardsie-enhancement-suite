@@ -87,6 +87,7 @@ if (window.top == window.self) {
 	addThanksAfterPosts();
 	addThreadPreviews();
 	userMenus();
+	editableQuoting();
 	userHistory(categoriesPromise);
 	window.addEventListener('hashchange', function () {
 		userHistory(categoriesPromise);
@@ -703,6 +704,37 @@ function userHistory(categoriesPromise) {
 				})
 				.catch(e => console.log(e));
 		});
+	}
+}
+function editableQuoting() {
+	//add keyboard shortcut (shift+q?)
+	for (let post of document.querySelectorAll('.ItemComment, .ItemDiscussion')) {
+		let q = post.querySelector('a.Quote');
+		let eq = q.cloneNode(true);
+		eq.childNodes.forEach(n => {
+			if (n.nodeType == 3)
+				n.nodeValue = ' Quote (Editable)';
+		});
+		eq.classList.remove('ReactButton'); // otherwise eventListener added dynamically
+		eq.classList.add('reactions-28064212');
+		eq.addEventListener('click', function (e) {
+			let editor = document.querySelector('.richEditor-text.userContent');
+			if (editor.textContent == "")
+				editor.removeChild(editor.firstElementChild);
+			let blockquote = document.createElement('div');
+			blockquote.classList.add('blockquote');
+			let blockquoteContent = document.createElement('div');
+			blockquoteContent.classList.add('blockquote-content');
+			let quote = post.querySelector('.Message.userContent').cloneNode(true);
+			quote.querySelectorAll('.js-embed.embedResponsive').forEach(e => {
+				e.parentElement.removeChild(e);
+			});
+			blockquoteContent.appendChild(quote);
+			blockquote.appendChild(blockquoteContent);
+			editor.appendChild(blockquote);
+			console.log(editor.innerHTML);
+		});
+		post.querySelector('.Reactions').insertBefore(eq, q.nextElementSibling);
 	}
 }
 function addThreadPreviews() {
