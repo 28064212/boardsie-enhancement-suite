@@ -87,7 +87,7 @@ if (window.top == window.self) {
 	addThanksAfterPosts();
 	addThreadPreviews();
 	userMenus();
-	editableQuoting();
+	//editableQuoting();
 	userHistory(categoriesPromise);
 	window.addEventListener('hashchange', function () {
 		userHistory(categoriesPromise);

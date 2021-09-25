@@ -253,6 +253,9 @@
 .threadlink-wrapper, .timestamp-wrapper {
 	float: left !important;
 }
+.threadlink-wrapper {
+	white-space: normal !important;
+}
 .oplink-wrapper, .lastposter-wrapper {
 	float: right !important;
 }
