@@ -530,7 +530,7 @@ function userMenus() {
 }
 function userHistory(categoriesPromise) {
 	let hash = new URL(window.location).hash;
-	if (hash.indexOf('#bes:') == 0) {
+	if (hash.indexOf('#bes:') == 0 && u.pathname == '/discussions') {
 		let remove = document.querySelectorAll('.forum-threadlist-table tbody tr, .forum-threadlist-table thead, .BoxNewDiscussion, .PageControls-filters, .HomepageTitle, #PagerBefore *, #PagerAfter *');
 		for (let r of remove) {
 			r.parentElement.removeChild(r);
@@ -639,11 +639,10 @@ function userHistory(categoriesPromise) {
 									td.appendChild(text);
 								}
 								else {
-									let chars = 500;
-									let discussionList = [];
+									let parentDiscussionList = [];
 									for (let c of comments)
-										discussionList.push(c.discussionID);
-									fetch(api + 'discussions/?limit=500&discussionID=' + discussionList.join(','))
+										parentDiscussionList.push(c.discussionID);
+									fetch(api + 'discussions/?limit=500&discussionID=' + parentDiscussionList.join(','))
 										.then(response => {
 											if (response.ok)
 												return response.json();
@@ -651,6 +650,7 @@ function userHistory(categoriesPromise) {
 												throw new Error(response.statusText);
 										})
 										.then(discussions => {
+											let charsToDisplay = 500;
 											loadingRow.parentElement.removeChild(loadingRow);
 											for (let c of comments) {
 												let discussion = discussions.find(item => item.discussionID == c.discussionID);
@@ -662,7 +662,7 @@ function userHistory(categoriesPromise) {
 
 												let text = document.createElement('p');
 												let body = innerText(c.body).trim();
-												text.appendChild(document.createTextNode(body.substring(0, chars - 1) + (body.length > chars ? '...' : '')));
+												text.appendChild(document.createTextNode(body.substring(0, charsToDisplay - 1) + (body.length > charsToDisplay ? '...' : '')));
 												td.appendChild(text);
 
 												let meta = document.createElement('p');
