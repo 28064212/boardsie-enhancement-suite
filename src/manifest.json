@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Boardsie Enhancement Suite",
-	"version": "0.2.2",
+	"version": "0.2.3",
 	"description": "Enhancements for Boards.ie",
 	"author": "28064212",
 	"homepage_url": "https://github.com/28064212/boardsie-enhancement-suite",
@@ -35,5 +35,6 @@
 		}
 	]
 }
+
 
 
