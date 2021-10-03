@@ -529,13 +529,13 @@ function userMenus() {
 	}
 }
 function userHistory(categoriesPromise) {
-	let hash = new URL(window.location).hash;
-	if (hash.indexOf('#bes:') == 0 && u.pathname == '/discussions') {
+	let url = new URL(window.location);
+	if (url.hash.indexOf('#bes:') == 0 && url.pathname == '/discussions') {
 		let remove = document.querySelectorAll('.forum-threadlist-table tbody tr, .forum-threadlist-table thead, .BoxNewDiscussion, .PageControls-filters, .HomepageTitle, #PagerBefore *, #PagerAfter *');
 		for (let r of remove) {
 			r.parentElement.removeChild(r);
 		}
-		let params = hash.replace('#bes:', '').split(':');
+		let params = url.hash.replace('#bes:', '').split(':');
 		let username = decodeURIComponent(params[0]);
 		let page = params[1] === undefined ? 1 : parseInt(params[1]);
 		document.querySelector('.forum-threadlist-header').textContent = 'Posts by ' + username;
@@ -626,76 +626,86 @@ function userHistory(categoriesPromise) {
 									throw new Error(response.statusText);
 							})
 							.then(comments => {
-								if (comments.length == 0) {
-									loadingRow.parentElement.removeChild(loadingRow);
-									let tr = document.createElement('tr');
-									let td = document.createElement('td');
-									td.classList.add('postbit-postbody');
-									tr.appendChild(td);
-									table.appendChild(tr);
-
-									let text = document.createElement('p');
-									text.appendChild(document.createTextNode('[No posts found]'));
-									td.appendChild(text);
-								}
-								else {
-									let parentDiscussionList = [];
-									for (let c of comments)
-										parentDiscussionList.push(c.discussionID);
-									fetch(api + 'discussions/?limit=500&discussionID=' + parentDiscussionList.join(','))
-										.then(response => {
-											if (response.ok)
-												return response.json();
-											else
-												throw new Error(response.statusText);
-										})
-										.then(discussions => {
-											let charsToDisplay = 500;
+								fetch(api + 'discussions?insertUserID=' + userid + '&sort=-dateInserted&dateInserted=%3E%3D' + encodeURIComponent('2021-06-29T21:58:01+00:00'))
+									.then(response => {
+										if (response.ok)
+											return response.json();
+										else
+											throw new Error(response.statusText);
+									})
+									.then(discussions => {
+										if (comments.length == 0) {
 											loadingRow.parentElement.removeChild(loadingRow);
-											for (let c of comments) {
-												let discussion = discussions.find(item => item.discussionID == c.discussionID);
-												let tr = document.createElement('tr');
-												let td = document.createElement('td');
-												td.classList.add('postbit-postbody');
-												tr.appendChild(td);
-												table.appendChild(tr);
+											let tr = document.createElement('tr');
+											let td = document.createElement('td');
+											td.classList.add('postbit-postbody');
+											tr.appendChild(td);
+											table.appendChild(tr);
 
-												let text = document.createElement('p');
-												let body = innerText(c.body).trim();
-												text.appendChild(document.createTextNode(body.substring(0, charsToDisplay - 1) + (body.length > charsToDisplay ? '...' : '')));
-												td.appendChild(text);
+											let text = document.createElement('p');
+											text.appendChild(document.createTextNode('[No posts found]'));
+											td.appendChild(text);
+										}
+										else {
+											let parentDiscussionList = [];
+											for (let c of comments)
+												parentDiscussionList.push(c.discussionID);
+											fetch(api + 'discussions/?limit=500&discussionID=' + parentDiscussionList.join(','))
+												.then(response => {
+													if (response.ok)
+														return response.json();
+													else
+														throw new Error(response.statusText);
+												})
+												.then(discussions => {
+													let charsToDisplay = 500;
+													loadingRow.parentElement.removeChild(loadingRow);
+													for (let c of comments) {
+														let discussion = discussions.find(item => item.discussionID == c.discussionID);
+														let tr = document.createElement('tr');
+														let td = document.createElement('td');
+														td.classList.add('postbit-postbody');
+														tr.appendChild(td);
+														table.appendChild(tr);
 
-												let meta = document.createElement('p');
-												let timestamp = document.createElement('a');
-												timestamp.href = c.url;
-												let t = new Date(c.dateInserted);
-												let tFormatted = (t.getFullYear().toString() + "-" + ("0" + (t.getMonth() + 1)).slice(-2) + "-" + ("0" + t.getDate()).slice(-2) + " " + ("0" + t.getHours()).slice(-2) + ":" + ("0" + t.getMinutes()).slice(-2));
-												timestamp.appendChild(document.createTextNode(tFormatted));
-												meta.appendChild(timestamp);
+														let text = document.createElement('p');
+														let body = innerText(c.body).trim();
+														text.appendChild(document.createTextNode(body.substring(0, charsToDisplay - 1) + (body.length > charsToDisplay ? '...' : '')));
+														td.appendChild(text);
 
-												meta.appendChild(document.createTextNode(' in '));
-												let title = document.createElement('a');
-												title.appendChild(document.createTextNode(discussion.name));
-												title.href = discussion.url;
-												meta.appendChild(title);
+														let meta = document.createElement('p');
+														let timestamp = document.createElement('a');
+														timestamp.href = c.url;
+														let t = new Date(c.dateInserted);
+														let tFormatted = (t.getFullYear().toString() + "-" + ("0" + (t.getMonth() + 1)).slice(-2) + "-" + ("0" + t.getDate()).slice(-2) + " " + ("0" + t.getHours()).slice(-2) + ":" + ("0" + t.getMinutes()).slice(-2));
+														timestamp.appendChild(document.createTextNode(tFormatted));
+														meta.appendChild(timestamp);
 
-												meta.appendChild(document.createTextNode(' ['));
-												let cat = data.find(d => d.id == discussion.categoryID)
-												let category = document.createElement('a');
-												category.classList.add('userhistory-category-28064212')
-												category.appendChild(document.createTextNode(cat.name));
-												category.href = cat.url;
-												meta.appendChild(category);
-												meta.appendChild(document.createTextNode(']'));
+														meta.appendChild(document.createTextNode(' in '));
+														let title = document.createElement('a');
+														title.appendChild(document.createTextNode(discussion.name));
+														title.href = discussion.url;
+														meta.appendChild(title);
 
-												if (c.score != null)
-													meta.appendChild(document.createTextNode(' ' + c.score + ' Thanks'));
+														meta.appendChild(document.createTextNode(' ['));
+														let cat = data.find(d => d.id == discussion.categoryID)
+														let category = document.createElement('a');
+														category.classList.add('userhistory-category-28064212')
+														category.appendChild(document.createTextNode(cat.name));
+														category.href = cat.url;
+														meta.appendChild(category);
+														meta.appendChild(document.createTextNode(']'));
 
-												td.appendChild(meta);
-											}
-										})
-										.catch(e => console.log(e));
-								}
+														if (c.score != null)
+															meta.appendChild(document.createTextNode(' ' + c.score + ' Thanks'));
+
+														td.appendChild(meta);
+													}
+												})
+												.catch(e => console.log(e));
+										}
+									})
+									.catch(e => console.log(e));
 							})
 							.catch(e => console.log(e));
 					}
