@@ -818,7 +818,7 @@ function addThreadPreviews() {
 								let firstPost = new Date(d.dateInserted);
 								let firstPostFormatted = ("0" + firstPost.getDate()).slice(-2) + "-" + ("0" + (firstPost.getMonth() + 1)).slice(-2) + "-" + firstPost.getFullYear().toString().slice(-2) + " " + ("0" + firstPost.getHours()).slice(-2) + ":" + ("0" + firstPost.getMinutes()).slice(-2);
 								cell.innerHTML = '<div style="float:right">' +
-									'<a title="View first post" href="' + d.url + '"><div class="spritethreadbit spritethreadbit-latestpost"></div></a> ' +
+									'<a title="View first post" href="' + d.url + '/p1"><div class="spritethreadbit spritethreadbit-latestpost"></div></a> ' +
 									'<a class="threadbit-lastposter" href="' + d.insertUser.url + '">' + d.insertUser.name + '</a></div><div>' + firstPostFormatted + '</div>';
 								row.removeChild(cell);
 								row.insertBefore(cell, row.lastElementChild);
