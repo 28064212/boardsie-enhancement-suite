@@ -20,6 +20,8 @@ if (window.top == window.self) {
 	try {
 		document.querySelector('#themeFooter').shadowRoot.querySelector('.footer').style.background = "inherit";
 		document.querySelector('#themeFooter').shadowRoot.querySelector('.footer').style.color = "inherit";
+		if(new URL(window.location).pathname != '/')
+			document.querySelector('.Panel.Panel-main').style.display = "none";
 	}
 	catch (e) { }
 
@@ -787,19 +789,6 @@ function addThreadPreviews() {
 							preview.style.display = "none";
 						});
 
-						if (d.bookmarked) {
-							let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-							svg.setAttribute("viewBox", "0 0 12.733 16.394");
-							svg.innerHTML = '<title>Bookmark</title><path class="svgBookmark-mainPath" stroke-width="2" d="M1.05.5H11.683a.55.55,0,0,1,.55.55h0V15.341a.549.549,0,0,1-.9.426L6.714,12a.547.547,0,0,0-.7,0L1.4,15.767a.55.55,0,0,1-.9-.426V1.05A.55.55,0,0,1,1.05.5z"></path>';
-							svg.style.height = "16px";
-							svg.style.width = "12px";
-							svg.style.float = "right";
-							svg.style.marginLeft = "10px";
-							svg.querySelector('path').style.stroke = "rgb(59, 85, 134)";
-							svg.querySelector('path').style.fill = "rgb(59, 85, 134)";
-							parent.insertBefore(svg, parent.querySelector('.Category, .oplink-wrapper'));
-						}
-
 						if (l.classList.contains("threadbit-threadlink")) {
 							try {
 								let row = l.parentElement.parentElement;
@@ -831,7 +820,7 @@ function addThreadPreviews() {
 function addThanksAfterPosts() {
 	for (let post of document.querySelectorAll('.ItemComment, .ItemDiscussion')) {
 		if (post.classList.contains('ItemDiscussion') && post.querySelector('.HasCount')) {
-			let path = new URL(post.querySelector(".postcount").href).pathname.replace('/discussion/', '');
+			let path = new URL(post.querySelector(".post-count a").href).pathname.replace('/discussion/', '');
 			let id = path.slice(0, path.indexOf('/'));
 			appendThanks(post, 'discussions', id);
 		}
@@ -945,6 +934,7 @@ function addBookmarkStatusToComments() {
 function addCategoryListing(categoriesPromise) {
 	categoriesPromise.then(data => {
 		let catLink = document.querySelector("a[to='/categories']");
+		catLink.innerText += " 🠗";
 		let categories = document.createElement("div");
 		categories.id = "categories-28064212";
 		categories.style.display = "none";
