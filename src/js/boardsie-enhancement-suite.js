@@ -1218,7 +1218,7 @@ function keyShortcuts(key) {
 			let threads = document.querySelectorAll('.forum-threadlist-thread');
 			for (let t of threads) {
 				if (t.querySelector('.HasNew'))
-					window.open(t.querySelector('a'));
+					window.open(t.querySelector('a.threadbit-threadlink'));
 			}
 		}
 		else if (!ctrl && code == 80 && hl && hl.getElementsByClassName('customspamlink').length > 0) {
