@@ -181,7 +181,7 @@
 .bodybox-wrap {
 	padding-left: 100px !important;
 }
-#latest+.Comment .postbit-header {
+#latest+.Comment .postbit-header time {
 	font-weight: bold !important;
 }
 .UserSignature {
@@ -201,6 +201,9 @@
 .MessageList.Discussion .ItemComment {
 	/* hides false double-posts */
 	display: none !important;
+}
+.mid-ad.ad-container {
+	margin: 0 !important;
 }
 
 /* forums */
@@ -222,6 +225,9 @@
 }
 .forum-threadlist-thread .Meta>* {
 	margin: 0 !important;
+}
+.forum-threadlist-thread .Options>* {
+	float: right !important;
 }
 .Category {
 	float: right !important;
