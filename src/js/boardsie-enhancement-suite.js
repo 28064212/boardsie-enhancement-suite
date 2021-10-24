@@ -20,7 +20,7 @@ if (window.top == window.self) {
 	try {
 		document.querySelector('#themeFooter').shadowRoot.querySelector('.footer').style.background = "inherit";
 		document.querySelector('#themeFooter').shadowRoot.querySelector('.footer').style.color = "inherit";
-		if(new URL(window.location).pathname != '/')
+		if (new URL(window.location).pathname != '/')
 			document.querySelector('.Panel.Panel-main').style.display = "none";
 	}
 	catch (e) { }
@@ -543,13 +543,15 @@ function userHistory(categoriesPromise) {
 		document.querySelector('.forum-threadlist-header').textContent = 'Posts by ' + username;
 		document.title = 'Posts by ' + username;
 
-		let table = document.querySelector('.forum-threadlist-table tbody');
+		let table = document.querySelector('.forum-threadlist-table');
 		table.classList.add('userhistory-28064212');
+
+		let tbody = table.querySelector('tbody');
 		let loadingRow = document.createElement('tr');
 		let loadingCell = document.createElement('td');
 		loadingCell.classList.add('postbit-postbody');
 		loadingRow.appendChild(loadingCell);
-		table.appendChild(loadingRow);
+		tbody.appendChild(loadingRow);
 
 		let loadingText = document.createElement('p');
 		loadingText.style.fontStyle = 'italic';
@@ -609,7 +611,7 @@ function userHistory(categoriesPromise) {
 		pagerBefore.appendChild(next);
 		pagerAfter.appendChild(next.cloneNode(true));
 
-		categoriesPromise.then(data => {
+		categoriesPromise.then(categories => {
 			fetch(api + 'users/by-names?name=' + username)
 				.then(response => {
 					if (response.ok)
@@ -620,94 +622,137 @@ function userHistory(categoriesPromise) {
 				.then(users => {
 					let userid = users && users[0] !== undefined ? users[0].userID : null;
 					if (userid) {
-						fetch(api + 'comments?insertUserID=' + userid + '&sort=-dateInserted&page=' + page)
+						//fetch(api + 'comments?insertUserID=' + userid + '&sort=-dateInserted&page=' + page)
+						fetch(api + 'search?limit=30&insertUserIDs[0]=' + userid + '&sort=-dateInserted&types[0]=discussion&types[1]=comment&types[2]=poll&types[3]=question&types[4]=idea&page=' + page)
 							.then(response => {
 								if (response.ok)
 									return response.json();
 								else
 									throw new Error(response.statusText);
 							})
-							.then(comments => {
-								fetch(api + 'discussions?insertUserID=' + userid + '&sort=-dateInserted&dateInserted=%3E%3D' + encodeURIComponent('2021-06-29T21:58:01+00:00'))
-									.then(response => {
-										if (response.ok)
-											return response.json();
-										else
-											throw new Error(response.statusText);
-									})
-									.then(discussions => {
-										if (comments.length == 0) {
+							.then(posts => {
+								if (posts.length == 0) {
+									loadingRow.parentElement.removeChild(loadingRow);
+									let tr = document.createElement('tr');
+									let td = document.createElement('td');
+									td.classList.add('postbit-postbody');
+									tr.appendChild(td);
+									tbody.appendChild(tr);
+
+									let text = document.createElement('p');
+									text.appendChild(document.createTextNode('[No posts found]'));
+									td.appendChild(text);
+								}
+								else {
+									let parentDiscussionList = [];
+									let commentList = [];
+									for (let p of posts) {
+										parentDiscussionList.push(p.discussionID);
+										if (p.type == 'comment') {
+											commentList.push(p.recordID)
+										}
+									}
+									if (commentList.length == 0)
+										commentList.push(-1);
+									let discussionsP = fetch(api + 'discussions/?limit=500&discussionID=' + parentDiscussionList.join(','))
+										.then(response => {
+											if (response.ok)
+												return response.json();
+											else
+												throw new Error(response.statusText);
+										})
+										.catch(e => console.log(e));
+									let commentsP = fetch(api + 'comments/?limit=500&commentID=' + commentList.join(','))
+										.then(response => {
+											if (response.ok)
+												return response.json();
+											else
+												throw new Error(response.statusText);
+										})
+										.catch(e => console.log(e));
+
+									Promise.all([discussionsP, commentsP])
+										.then(data => {
+											let charsToDisplay = 500;
 											loadingRow.parentElement.removeChild(loadingRow);
-											let tr = document.createElement('tr');
-											let td = document.createElement('td');
-											td.classList.add('postbit-postbody');
-											tr.appendChild(td);
-											table.appendChild(tr);
 
-											let text = document.createElement('p');
-											text.appendChild(document.createTextNode('[No posts found]'));
-											td.appendChild(text);
-										}
-										else {
-											let parentDiscussionList = [];
-											for (let c of comments)
-												parentDiscussionList.push(c.discussionID);
-											fetch(api + 'discussions/?limit=500&discussionID=' + parentDiscussionList.join(','))
-												.then(response => {
-													if (response.ok)
-														return response.json();
-													else
-														throw new Error(response.statusText);
-												})
-												.then(discussions => {
-													let charsToDisplay = 500;
-													loadingRow.parentElement.removeChild(loadingRow);
-													for (let c of comments) {
-														let discussion = discussions.find(item => item.discussionID == c.discussionID);
-														let tr = document.createElement('tr');
-														let td = document.createElement('td');
-														td.classList.add('postbit-postbody');
-														tr.appendChild(td);
-														table.appendChild(tr);
+											let header = document.createElement('thead');
+											let headerRow = document.createElement('tr');
+											let bodyHeader = document.createElement('th');
+											bodyHeader.innerText = 'Post';
+											let thanksHeader = document.createElement('th');
+											thanksHeader.innerText = 'Thanks';
+											let postedHeader = document.createElement('th');
+											postedHeader.innerText = 'Posted';
+											let catHeader = document.createElement('th');
+											catHeader.innerText = 'Category';
+											headerRow.appendChild(bodyHeader);
+											headerRow.appendChild(postedHeader);
+											headerRow.appendChild(catHeader);
+											headerRow.appendChild(thanksHeader);
+											header.appendChild(headerRow);
+											table.insertBefore(header, table.firstChild);
 
-														let text = document.createElement('p');
-														let body = innerText(c.body).trim();
-														text.appendChild(document.createTextNode(body.substring(0, charsToDisplay - 1) + (body.length > charsToDisplay ? '...' : '')));
-														td.appendChild(text);
+											for (let p of posts) {
+												let discussion = data[0].find(item => item.discussionID == p.discussionID);
+												let comment = data[1].find(item => item.commentID == p.recordID);
 
-														let meta = document.createElement('p');
-														let timestamp = document.createElement('a');
-														timestamp.href = c.url;
-														let t = new Date(c.dateInserted);
-														let tFormatted = (t.getFullYear().toString() + "-" + ("0" + (t.getMonth() + 1)).slice(-2) + "-" + ("0" + t.getDate()).slice(-2) + " " + ("0" + t.getHours()).slice(-2) + ":" + ("0" + t.getMinutes()).slice(-2));
-														timestamp.appendChild(document.createTextNode(tFormatted));
-														meta.appendChild(timestamp);
+												let tr = document.createElement('tr');
+												tbody.appendChild(tr);
 
-														meta.appendChild(document.createTextNode(' in '));
-														let title = document.createElement('a');
-														title.appendChild(document.createTextNode(discussion.name));
-														title.href = discussion.url;
-														meta.appendChild(title);
+												let td = document.createElement('td');
+												td.classList.add('postbit-postbody');
+												tr.appendChild(td);
 
-														meta.appendChild(document.createTextNode(' ['));
-														let cat = data.find(d => d.id == discussion.categoryID)
-														let category = document.createElement('a');
-														category.classList.add('userhistory-category-28064212')
-														category.appendChild(document.createTextNode(cat.name));
-														category.href = cat.url;
-														meta.appendChild(category);
-														meta.appendChild(document.createTextNode(']'));
+												let text = document.createElement('p');
+												let body = innerText(p.bodyPlainText).trim();
+												text.appendChild(document.createTextNode(body.substring(0, charsToDisplay - 1) + (body.length > charsToDisplay ? '...' : '')));
+												td.appendChild(text);
 
-														if (c.score != null)
-															meta.appendChild(document.createTextNode(' ' + c.score + ' Thanks'));
+												let meta = document.createElement('p');
+												let title = document.createElement('a');
+												if (p.recordType == 'discussion') {
+													title.style.fontWeight = "bold";
+													td.insertBefore(meta, td.firstChild);
+												}
+												else {
+													meta.appendChild(document.createTextNode('in '));
+													td.appendChild(meta);
+												}
+												title.href = discussion.url;
+												title.appendChild(document.createTextNode(discussion.name));
+												meta.appendChild(title);
 
-														td.appendChild(meta);
-													}
-												})
-												.catch(e => console.log(e));
-										}
-									})
-									.catch(e => console.log(e));
+												let postedCell = document.createElement('td');
+												postedCell.classList.add('postbit-postbody');
+												let timestamp = document.createElement('a');
+												timestamp.href = p.url;
+												let t = new Date(p.dateInserted);
+												let tFormatted = (t.getFullYear().toString() + "-" + ("0" + (t.getMonth() + 1)).slice(-2) + "-" + ("0" + t.getDate()).slice(-2) + " " + ("0" + t.getHours()).slice(-2) + ":" + ("0" + t.getMinutes()).slice(-2));
+												timestamp.appendChild(document.createTextNode(tFormatted));
+												postedCell.appendChild(timestamp);
+												postedCell.style.whiteSpace = "nowrap";
+												tr.appendChild(postedCell);
+
+												let catCell = document.createElement('td');
+												catCell.classList.add('postbit-postbody');
+												let cat = categories.find(d => d.id == p.categoryID)
+												let category = document.createElement('a');
+												category.appendChild(document.createTextNode(cat.name));
+												category.href = cat.url;
+												catCell.appendChild(category)
+												tr.appendChild(catCell);
+
+												let thanks = document.createElement('td');
+												thanks.classList.add('postbit-postbody');
+												tr.appendChild(thanks);
+												if (p.recordType == 'discussion')
+													thanks.appendChild(document.createTextNode(discussion.score == null ? "-" : discussion.score));
+												else
+													thanks.appendChild(document.createTextNode(comment.score == null ? "-" : comment.score));
+											}
+										});
+								}
 							})
 							.catch(e => console.log(e));
 					}

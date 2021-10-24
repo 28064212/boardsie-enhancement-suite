@@ -581,6 +581,24 @@ body {
 
 /* user history */
 
+table.userhistory-28064212 {
+	table-layout: auto !important;
+}
+table.userhistory-28064212 th {
+	padding: 10px !important;
+	white-space: nowrap !important;
+	text-align: left !important;
+}
+table.userhistory-28064212 td:first-child, table.userhistory-28064212 th:first-child {
+	width: auto !important;
+}
+table.userhistory-28064212 td {
+	padding: 10px !important;
+	vertical-align: top !important;
+}
+.userhistory-28064212 td:last-child {
+	text-align: center !important;
+}
 .userhistory-28064212 p:first-of-type {
 	margin-bottom: 10px !important;
 }
