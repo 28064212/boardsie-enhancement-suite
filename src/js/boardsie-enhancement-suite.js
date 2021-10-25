@@ -50,28 +50,24 @@ if (window.top == window.self) {
 		await browser.storage.sync.set({ "settings": settings });
 	})();
 
-	let categoriesPromise = null;
-	//check do we need categories?
-	if (true) {
-		categoriesPromise = fetch(api + 'categories/?limit=500&maxDepth=100')
-			.then(response => {
-				if (response.ok)
-					return response.json();
-				else
-					throw new Error(response.statusText);
-			})
-			.then(d => {
-				let categories = [];
-				flattenCategories(d, categories);
-				let order = 0;
-				for (let c of categories) {
-					c.order = order;
-					order += 1;
-				}
-				return categories;
-			})
-			.catch(e => console.log(e));
-	}
+	let categoriesPromise = fetch(api + 'categories/?limit=500&maxDepth=100')
+		.then(response => {
+			if (response.ok)
+				return response.json();
+			else
+				throw new Error(response.statusText);
+		})
+		.then(d => {
+			let categories = [];
+			flattenCategories(d, categories);
+			let order = 0;
+			for (let c of categories) {
+				c.order = order;
+				order += 1;
+			}
+			return categories;
+		})
+		.catch(e => console.log(e));
 
 	let titleBar = document.querySelector('#titleBar');
 	if (titleBar && titleBar.innerHTML == "") {
@@ -705,7 +701,7 @@ function userHistory(categoriesPromise) {
 												tr.appendChild(td);
 
 												let text = document.createElement('p');
-												let body = innerText(p.bodyPlainText).trim();
+												let body = p.bodyPlainText.trim();
 												text.appendChild(document.createTextNode(body.substring(0, charsToDisplay - 1) + (body.length > charsToDisplay ? '...' : '')));
 												td.appendChild(text);
 
@@ -764,7 +760,6 @@ function userHistory(categoriesPromise) {
 	}
 }
 function editableQuoting() {
-	//add keyboard shortcut (shift+q?)
 	for (let post of document.querySelectorAll('.ItemComment, .ItemDiscussion')) {
 		let q = post.querySelector('a.Quote');
 		let eq = q.cloneNode(true);
