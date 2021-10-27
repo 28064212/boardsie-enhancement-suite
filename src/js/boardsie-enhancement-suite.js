@@ -20,7 +20,7 @@ if (window.top == window.self) {
 	try {
 		document.querySelector('#themeFooter').shadowRoot.querySelector('.footer').style.background = "inherit";
 		document.querySelector('#themeFooter').shadowRoot.querySelector('.footer').style.color = "inherit";
-		if (new URL(window.location).pathname != '/')
+		if (location.pathname != '/')
 			document.querySelector('.Panel.Panel-main').style.display = "none";
 	}
 	catch (e) { }
@@ -362,7 +362,7 @@ function flattenCategories(data, categories) {
 	}
 }
 function markCategoriesRead(categoriesPromise) {
-	let catFollowedPage = new URL(window.location).pathname == '/categories' && document.querySelector('.selectBox-selected').textContent == 'Following';
+	let catFollowedPage = location.pathname == '/categories' && document.querySelector('.selectBox-selected').textContent == 'Following';
 	let listed = document.querySelectorAll("h2.CategoryNameHeading a");
 	for (let l of listed) {
 		l.style.opacity = "0.1";
@@ -527,13 +527,12 @@ function userMenus() {
 	}
 }
 function userHistory(categoriesPromise) {
-	let url = new URL(window.location);
-	if (url.hash.indexOf('#bes:') == 0 && url.pathname == '/discussions') {
+	if (location.hash.indexOf('#bes:') == 0 && location.pathname == '/discussions') {
 		let remove = document.querySelectorAll('.forum-threadlist-table tbody tr, .forum-threadlist-table thead, .BoxNewDiscussion, .PageControls-filters, .HomepageTitle, #PagerBefore *, #PagerAfter *');
 		for (let r of remove) {
 			r.parentElement.removeChild(r);
 		}
-		let params = url.hash.replace('#bes:', '').split(':');
+		let params = location.hash.replace('#bes:', '').split(':');
 		let username = decodeURIComponent(params[0]);
 		let page = params[1] === undefined ? 1 : parseInt(params[1]);
 		document.querySelector('.forum-threadlist-header').textContent = 'Posts by ' + username;
@@ -1210,14 +1209,14 @@ function keyShortcuts(key) {
 		}
 		else if (!ctrl && code == 70) {
 			// f - follow/unfollow
-			if (document.querySelector('a.Bookmark')) {
+			if (document.querySelector('a.Bookmark') && location.pathname.startsWith('/discussion/')) {
 				if (document.querySelector('a.Bookmarked'))
 					createAlert("Thread unfollowed");
 				else
 					createAlert("Discussion bookmarked");
 				document.querySelector('a.Bookmark').click();
 			}
-			else if (document.querySelector("button[aria-label='Follow'], button[aria-label='Unfollow']")) {
+			else if (location.pathname.startsWith('/categories/') && document.querySelector('meta[name=catid]')) {
 				let category = document.querySelector('meta[name=catid]').content;
 				let user = gdn.meta.ui.currentUser.userID;
 				fetch(api + "categories/" + category + "/preferences/" + user)
@@ -1252,7 +1251,7 @@ function keyShortcuts(key) {
 		}
 		else if (!ctrl && code == 77) {
 			// m - Mark forum read
-			if (document.querySelector('meta[name=catid]')) {
+			if (location.pathname.startsWith('/categories/') && document.querySelector('meta[name=catid]')) {
 				let category = document.querySelector('meta[name=catid]').content;
 				let transientKey = gdn.meta.TransientKey;
 				fetch("https://www.boards.ie/category/markread?categoryid=" + category + "&tkey=" + transientKey)
