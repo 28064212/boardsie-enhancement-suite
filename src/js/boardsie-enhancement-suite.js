@@ -983,7 +983,6 @@ function addBookmarkStatusToComments() {
 function addCategoryListing(categoriesPromise) {
 	categoriesPromise.then(data => {
 		let catLink = document.querySelector("a[to='/categories']");
-		catLink.innerText += " 🠗";
 		let categories = document.createElement("div");
 		categories.id = "categories-28064212";
 		categories.style.display = "none";
