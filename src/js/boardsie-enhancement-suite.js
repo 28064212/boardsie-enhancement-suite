@@ -816,8 +816,10 @@ function addThreadPreviews() {
 						preview.innerHTML = d.body ? d.body : "";
 						preview.style.display = "none";
 						let parent = null;
+						let row = null;
 						if (l.parentElement.classList.contains("threadlink-wrapper")) {
 							parent = l.parentElement.parentElement;
+							row = l.parentElement.parentElement.parentElement;
 							preview.style.top = '28px';
 							parent.appendChild(preview);
 							preview.parentElement.title = '';
@@ -828,6 +830,7 @@ function addThreadPreviews() {
 						}
 						else {
 							parent = l.parentElement;
+							row = l.parentElement.parentElement;
 							preview.style.top = '46px';
 							parent.appendChild(preview);
 						}
@@ -838,10 +841,12 @@ function addThreadPreviews() {
 							preview.style.display = "none";
 						});
 
-						if (l.classList.contains("threadbit-threadlink")) {
-							try {
-								// add first post column (in place of views column)
-								let row = l.parentElement.parentElement;
+						try {
+							//update last post link
+							let lastPostLink = row.querySelector('.forum-threadlist-lastpost a, .lastposter-wrapper a');
+							lastPostLink.href = d.lastPost.url;
+							// add first post column (in place of views column)
+							if (l.classList.contains("threadbit-threadlink")) {
 								let cell = row.lastElementChild;
 								cell.className = "";
 								let firstPost = new Date(d.dateInserted);
@@ -858,13 +863,10 @@ function addThreadPreviews() {
 									table.querySelector('th.forum-threadlist-views').textContent = 'Replies';
 									table.classList.add('firstpost-added-28064212');
 								}
-								//update last post link
-								let lastPostLink = row.querySelector('.forum-threadlist-lastpost a');
-								lastPostLink.href = d.lastPost.url;
 
 							}
-							catch (e) { console.log(e) }
 						}
+						catch (e) { console.log(e) }
 					}
 				}
 			})
