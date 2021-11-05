@@ -798,7 +798,7 @@ function addThreadPreviews() {
 			discussions.push(id);
 	}
 	if (discussions.length > 0) {
-		fetch(api + 'discussions/?limit=500&discussionID=' + discussions.join(','))
+		fetch(api + 'discussions/?limit=500&expand=lastPost&discussionID=' + discussions.join(','))
 			.then(response => {
 				if (response.ok)
 					return response.json();
@@ -840,6 +840,7 @@ function addThreadPreviews() {
 
 						if (l.classList.contains("threadbit-threadlink")) {
 							try {
+								// add first post column (in place of views column)
 								let row = l.parentElement.parentElement;
 								let cell = row.lastElementChild;
 								cell.className = "";
@@ -857,6 +858,10 @@ function addThreadPreviews() {
 									table.querySelector('th.forum-threadlist-views').textContent = 'Replies';
 									table.classList.add('firstpost-added-28064212');
 								}
+								//update last post link
+								let lastPostLink = row.querySelector('.forum-threadlist-lastpost a');
+								lastPostLink.href = d.lastPost.url;
+
 							}
 							catch (e) { console.log(e) }
 						}
