@@ -1162,7 +1162,7 @@ function keyShortcuts(key) {
 		}
 		else if (code == 65 || code == 90) {
 			// a/z - navigate forums/threads
-			let list = document.querySelectorAll('.forum-threadlist-table tbody tr, .module-wrapper tbody tr, .ItemComment, .ItemDiscussion');
+			let list = document.querySelectorAll('.forum-threadlist-table tbody tr, .module-wrapper tbody tr, .ItemComment, .ItemDiscussion, .Profile .DataList .Item');
 			if (list.length > 0) {
 				if (hl) {
 					hl.classList.remove('highlight-28064212');
