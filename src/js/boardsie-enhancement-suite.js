@@ -20,7 +20,7 @@ if (window.top == window.self) {
 	try {
 		document.querySelector('#themeFooter').shadowRoot.querySelector('.footer').style.background = "inherit";
 		document.querySelector('#themeFooter').shadowRoot.querySelector('.footer').style.color = "inherit";
-		if (location.pathname != '/')
+		if (!(location.pathname == '/' || location.pathname.startsWith("/profile/edit/")))
 			document.querySelector('.Panel.Panel-main').style.display = "none";
 	}
 	catch (e) { }
