@@ -78,6 +78,7 @@ if (window.top == window.self) {
 	else if (titleBar) {
 		addCategoryListing(categoriesPromise);
 		menuItems();
+		moveBreadcrumbs();
 	}
 
 	unboldReadThreads();
@@ -107,7 +108,14 @@ function titleBarObserver(mutationList, observer, categoriesPromise) {
 			observer.disconnect();
 		addCategoryListing(categoriesPromise);
 		menuItems();
+		moveBreadcrumbs();
 	}
+}
+function moveBreadcrumbs() {
+	// needed for sticky header, puts the breadcrumbs within the header
+	let breadBox = document.querySelector('.Frame-row');
+	let header = document.querySelector('#titleBar');
+	header.appendChild(breadBox);
 }
 function menuItems() {
 	let meBox = document.querySelector('.meBox');

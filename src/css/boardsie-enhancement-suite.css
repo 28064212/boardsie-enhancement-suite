@@ -622,18 +622,27 @@ table.userhistory-28064212 td {
 
 /* sticky header */
 
-body:not([data-stickyheader]) header, body:not([data-stickyheader]) .BreadcrumbsBox {
-	position: static !important
-}
-body:not([data-stickyheader]) .Frame-content, body:not([data-stickyheader]) .Breadcrumbs, body:not([data-stickyheader]) .Frame-content .Container {
-	margin-top: 0 !important;
-	margin-bottom: 0 !important;
-}
 body[data-stickyheader] #titleBar {
+	position: sticky !important;
+}
+body:not([data-stickyheader]) #titleBar {
+	position: static !important;
+}
+#titleBar, .BreadcrumbsBox {
 	top: 0 !important;
 }
-body[data-stickyheader] .BreadcrumbsBox {
-	top: 48px !important;
+.BreadcrumbsBox {
+	position: relative !important;
+	background-color: none !important;
+}
+.Breadcrumbs {
+	border-bottom: none !important;
+}
+#titleBar .Frame-row {
+	padding: 0 !important;
+}
+.top-ad, .Frame-content {
+	margin-top: 0px !important;
 }
 
 /* dark mode */
