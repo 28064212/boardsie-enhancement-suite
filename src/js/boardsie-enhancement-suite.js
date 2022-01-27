@@ -364,7 +364,7 @@ function docsModal() {
 }
 function flattenCategories(data, categories) {
 	for (let d of data) {
-		categories.push({ "id": d.categoryID, "parent": d.parentCategoryID, "name": d.name, "slug": d.urlcode, "followed": d.followed, "depth": d.depth, "url": d.url });
+		categories.push({ "id": d.categoryID, "parent": d.parentCategoryID, "name": d.name, "slug": d.urlCode, "followed": d.followed, "depth": d.depth, "url": d.url });
 		if (d.children && d.children.length > 0)
 			flattenCategories(d.children, categories)
 	}
@@ -456,6 +456,11 @@ function markCategoriesRead(categoriesPromise) {
 						l.style.opacity = "1";
 					})
 					.catch(e => console.log(e));
+			}
+			else {
+				l.style.transition = "opacity 750ms linear";
+				l.style.opacity = "1";
+				l.style.fontStyle = "italic";
 			}
 		}
 	});

@@ -186,7 +186,7 @@ a[to='/categories']::after {
 .bodybox-wrap {
 	padding-left: 100px !important;
 }
-#latest+.Comment .postbit-header time {
+#latest+.Comment .postbit-header .DateCreated a {
 	font-weight: bold !important;
 }
 .UserSignature {
@@ -627,6 +627,14 @@ body[data-stickyheader] #titleBar {
 }
 body:not([data-stickyheader]) #titleBar {
 	position: static !important;
+}
+body[data-stickyheader] #latest {
+	top: 0 !important;
+	scroll-margin-top: 75px !important;
+}
+body:not([data-stickyheader]) #latest {
+	top: 0 !important;
+	scroll-margin-top: unset !important;
 }
 #titleBar, .BreadcrumbsBox {
 	top: 0 !important;
