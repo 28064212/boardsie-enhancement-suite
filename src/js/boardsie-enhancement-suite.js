@@ -50,19 +50,31 @@ if (window.top == window.self) {
 		await browser.storage.sync.set({ "settings": settings });
 	})();
 
-	let categoriesPromise = fetch(api + 'categories/?limit=500&maxDepth=100')
+	let categories1Promise = fetch(api + 'categories/?limit=500&outputFormat=flat')
 		.then(response => {
 			if (response.ok)
 				return response.json();
 			else
 				throw new Error(response.statusText);
-		})
-		.then(d => {
+		});
+	let categories2Promise = fetch(api + 'categories/?limit=500&outputFormat=flat&page=2')
+		.then(response => {
+			if (response.ok)
+				return response.json();
+			else
+				throw new Error(response.statusText);
+		});
+
+	let categoriesPromise = Promise.all([categories1Promise, categories2Promise])
+		.then(data => {
 			let categories = [];
-			flattenCategories(d, categories);
 			let order = 0;
-			for (let c of categories) {
-				c.order = order;
+			for (let d of data[0]) {
+				categories.push({ "id": d.categoryID, "parent": d.parentCategoryID, "name": d.name, "slug": d.urlcode, "followed": d.followed, "depth": d.depth, "url": d.url, "order": order });
+				order += 1;
+			}
+			for (let d of data[1]) {
+				categories.push({ "id": d.categoryID, "parent": d.parentCategoryID, "name": d.name, "slug": d.urlcode, "followed": d.followed, "depth": d.depth, "url": d.url, "order": order });
 				order += 1;
 			}
 			return categories;
@@ -185,7 +197,6 @@ function settingsModal() {
 				window.addEventListener('keydown', keyShortcuts, true);
 			else
 				window.removeEventListener('keydown', keyShortcuts, true);
-			console.log("test", settings);
 			await browser.storage.sync.set({ "settings": settings });
 		});
 
@@ -361,13 +372,6 @@ function docsModal() {
 	</div>`;
 	}
 	docsModal.style.display = docsModal.style.display == 'none' ? 'block' : 'none';
-}
-function flattenCategories(data, categories) {
-	for (let d of data) {
-		categories.push({ "id": d.categoryID, "parent": d.parentCategoryID, "name": d.name, "slug": d.urlCode, "followed": d.followed, "depth": d.depth, "url": d.url });
-		if (d.children && d.children.length > 0)
-			flattenCategories(d.children, categories)
-	}
 }
 function markCategoriesRead(categoriesPromise) {
 	let catFollowedPage = location.pathname == '/categories' && document.querySelector('.selectBox-selected').textContent == 'Following';
@@ -796,7 +800,6 @@ function editableQuoting() {
 			blockquoteContent.appendChild(quote);
 			blockquote.appendChild(blockquoteContent);
 			editor.appendChild(blockquote);
-			console.log(editor.innerHTML);
 		});
 		post.querySelector('.Reactions').insertBefore(eq, q.nextElementSibling);
 	}
@@ -1038,18 +1041,30 @@ function addCategoryListing(categoriesPromise) {
 			group.appendChild(division);
 		}
 
+		// remove "followed"
 		data.unshift({ "id": 0, "parent": null, "followed": false, "name": "Followed", "url": "/categories?followed=1", "slug": "followed", "depth": 1 });
-		for (let d of data.filter(o => o.depth == 1)) {
+
+		let links = data.filter(f => f.depth == 1);
+		links.sort(function (a, b) {
+			// Followed first, then reverse alphabetical => Topics - Talk to - Regional
+			if(a.name.toLowerCase() == "followed")
+				return -1;
+			else if(b.name.toLowerCase() == "followed")
+				return 1;
+			else
+				return b.name.toLowerCase().localeCompare(a.name.toLowerCase());
+		});
+		for (let l of links) {
 			let header = document.createElement("a");
-			header.dataset.id = d.id;
-			header.innerText = d.name;
-			header.href = d.url;
+			header.dataset.id = l.id;
+			header.innerText = l.name;
+			header.href = l.url;
 			categoriesHeader.appendChild(header);
 
 			header.addEventListener("mouseover", function () {
 				//clear all divisions, populate children
 				for (let i of document.querySelectorAll('.categories-division-28064212 a')) {
-					if (i.dataset.parent == d.id)
+					if (i.dataset.parent == l.id)
 						i.style.display = 'block';
 					else
 						i.style.display = 'none';
@@ -1063,7 +1078,10 @@ function addCategoryListing(categoriesPromise) {
 				header.style.color = "white";
 			});
 		}
-		let links = data.filter(f => f.depth > 1);
+		links = data.filter(f => f.depth > 1);
+		links.sort(function (a, b) {
+			return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+		});
 		for (let l of links) {
 			let childLink = document.createElement('a');
 			childLink.dataset.id = l.id;
