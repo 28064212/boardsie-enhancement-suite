@@ -81,6 +81,25 @@ if (window.top == window.self) {
 		})
 		.catch(e => console.log(e));
 
+	// let categoriesPromise = fetch(api + 'categories/?maxDepth=100&outputFormat=tree')
+	// .then(response => {
+	// 	if (response.ok)
+	// 		return response.json();
+	// 	else
+	// 		throw new Error(response.statusText);
+	// })
+	// .then(data => {
+	// 	let categories = [];
+	// 	flattenCategories(data, categories);
+	// 	let order = 0;
+	// 	for (let c of categories) {
+	// 		c.order = order;
+	// 		order += 1;
+	// 	}
+	// 	return categories;
+	// })
+	// .catch(e => console.log(e));
+
 	let titleBar = document.querySelector('#titleBar');
 	if (titleBar && titleBar.innerHTML == "") {
 		// some pages load titlebar contents lazily
@@ -110,6 +129,13 @@ if (window.top == window.self) {
 	if (profileComments) {
 		let observer = new MutationObserver(addBookmarkStatusToComments);
 		observer.observe(profileComments, { childList: true, subtree: false });
+	}
+}
+function flattenCategories(data, categories) {
+	for(let d of data) {
+		categories.push({ "id": d.categoryID, "parent": d.parentCategoryID, "name": d.name, "slug": d.urlcode, "followed": d.followed, "depth": d.depth, "url": d.url });
+		if (d.children && d.children.length > 0)
+			flattenCategories(d.children, categories)
 	}
 }
 function titleBarObserver(mutationList, observer, categoriesPromise) {
