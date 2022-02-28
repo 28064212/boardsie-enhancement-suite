@@ -50,55 +50,55 @@ if (window.top == window.self) {
 		await browser.storage.sync.set({ "settings": settings });
 	})();
 
-	let categories1Promise = fetch(api + 'categories/?limit=500&outputFormat=flat')
-		.then(response => {
-			if (response.ok)
-				return response.json();
-			else
-				throw new Error(response.statusText);
-		});
-	let categories2Promise = fetch(api + 'categories/?limit=500&outputFormat=flat&page=2')
-		.then(response => {
-			if (response.ok)
-				return response.json();
-			else
-				throw new Error(response.statusText);
-		});
+	// let categories1Promise = fetch(api + 'categories/?limit=500&outputFormat=flat')
+	// 	.then(response => {
+	// 		if (response.ok)
+	// 			return response.json();
+	// 		else
+	// 			throw new Error(response.statusText);
+	// 	});
+	// let categories2Promise = fetch(api + 'categories/?limit=500&outputFormat=flat&page=2')
+	// 	.then(response => {
+	// 		if (response.ok)
+	// 			return response.json();
+	// 		else
+	// 			throw new Error(response.statusText);
+	// 	});
 
-	let categoriesPromise = Promise.all([categories1Promise, categories2Promise])
+	// let categoriesPromise = Promise.all([categories1Promise, categories2Promise])
+	// 	.then(data => {
+	// 		let categories = [];
+	// 		let order = 0;
+	// 		for (let d of data[0]) {
+	// 			categories.push({ "id": d.categoryID, "parent": d.parentCategoryID, "name": d.name, "slug": d.urlcode, "followed": d.followed, "depth": d.depth, "url": d.url, "order": order });
+	// 			order += 1;
+	// 		}
+	// 		for (let d of data[1]) {
+	// 			categories.push({ "id": d.categoryID, "parent": d.parentCategoryID, "name": d.name, "slug": d.urlcode, "followed": d.followed, "depth": d.depth, "url": d.url, "order": order });
+	// 			order += 1;
+	// 		}
+	// 		return categories;
+	// 	})
+	// 	.catch(e => console.log(e));
+
+	let categoriesPromise = fetch(api + 'categories/?maxDepth=100&outputFormat=tree')
+		.then(response => {
+			if (response.ok)
+				return response.json();
+			else
+				throw new Error(response.statusText);
+		})
 		.then(data => {
 			let categories = [];
+			flattenCategories(data, categories);
 			let order = 0;
-			for (let d of data[0]) {
-				categories.push({ "id": d.categoryID, "parent": d.parentCategoryID, "name": d.name, "slug": d.urlcode, "followed": d.followed, "depth": d.depth, "url": d.url, "order": order });
-				order += 1;
-			}
-			for (let d of data[1]) {
-				categories.push({ "id": d.categoryID, "parent": d.parentCategoryID, "name": d.name, "slug": d.urlcode, "followed": d.followed, "depth": d.depth, "url": d.url, "order": order });
+			for (let c of categories) {
+				c.order = order;
 				order += 1;
 			}
 			return categories;
 		})
 		.catch(e => console.log(e));
-
-	// let categoriesPromise = fetch(api + 'categories/?maxDepth=100&outputFormat=tree')
-	// .then(response => {
-	// 	if (response.ok)
-	// 		return response.json();
-	// 	else
-	// 		throw new Error(response.statusText);
-	// })
-	// .then(data => {
-	// 	let categories = [];
-	// 	flattenCategories(data, categories);
-	// 	let order = 0;
-	// 	for (let c of categories) {
-	// 		c.order = order;
-	// 		order += 1;
-	// 	}
-	// 	return categories;
-	// })
-	// .catch(e => console.log(e));
 
 	let titleBar = document.querySelector('#titleBar');
 	if (titleBar && titleBar.innerHTML == "") {
@@ -132,10 +132,28 @@ if (window.top == window.self) {
 	}
 }
 function flattenCategories(data, categories) {
-	for(let d of data) {
-		categories.push({ "id": d.categoryID, "parent": d.parentCategoryID, "name": d.name, "slug": d.urlcode, "followed": d.followed, "depth": d.depth, "url": d.url });
-		if (d.children && d.children.length > 0)
-			flattenCategories(d.children, categories)
+	if (Array.isArray(data)) {
+		for (let d of data) {
+			let urlcode = d.urlcode == null ? d.urlCode : d.urlcode;
+			categories.push({ "id": d.categoryID, "parent": d.parentCategoryID, "name": d.name, "slug": urlcode, "followed": d.followed, "depth": d.depth, "url": d.url });
+			if (d.children)
+			{
+				if((Array.isArray(d.children) && d.children.length > 0) || Object.keys(d.children).length > 0)
+					flattenCategories(d.children, categories)
+			}
+		}
+	}
+	else {
+		for (let d in data) {
+			d = data[d];
+			let urlcode = d.urlcode == null ? d.urlCode : d.urlcode;
+			categories.push({ "id": d.categoryID, "parent": d.parentCategoryID, "name": d.name, "slug": urlcode, "followed": d.followed, "depth": d.depth, "url": d.url });
+			if (d.children)
+			{
+				if((Array.isArray(d.children) && d.children.length > 0) || Object.keys(d.children).length > 0)
+					flattenCategories(d.children, categories)
+			}
+		}
 	}
 }
 function titleBarObserver(mutationList, observer, categoriesPromise) {
@@ -1073,9 +1091,9 @@ function addCategoryListing(categoriesPromise) {
 		let links = data.filter(f => f.depth == 1);
 		links.sort(function (a, b) {
 			// Followed first, then reverse alphabetical => Topics - Talk to - Regional
-			if(a.name.toLowerCase() == "followed")
+			if (a.name.toLowerCase() == "followed")
 				return -1;
-			else if(b.name.toLowerCase() == "followed")
+			else if (b.name.toLowerCase() == "followed")
 				return 1;
 			else
 				return b.name.toLowerCase().localeCompare(a.name.toLowerCase());
