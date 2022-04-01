@@ -73,10 +73,19 @@ a[to='/categories']::after {
 .postbit-userinfo br {
 	display: none !important;
 }
-.userinfo-row {
-	display: block !important;
+.userinfo-title {
+	padding: 0 !important;
+	border: 0 !important;
+	margin: 0 !important;
 }
 .userinfo-row:first-child {
+	display: block !important;
+	position: relative !important;
+	padding: 0 !important;
+}
+.userinfo-row {
+	padding: 0 !important;
+	margin: 0 0 3px 0 !important;
 	border: none !important;
 }
 .userinfo-username {
@@ -117,6 +126,9 @@ a[to='/categories']::after {
 .ProfilePhotoLarge {
 	float: right !important;
 	margin: 0 !important;
+	top: 0 !important;
+	right: 0 !important;
+	position: absolute !important;
 }
 .userinfo-row span.MItem {
 	display: block !important;
@@ -124,9 +136,6 @@ a[to='/categories']::after {
 }
 .userinfo-row span.MItem:first-of-type {
 	clear: both !important;
-}
-.userinfo-row span.MItem.Rank {
-	float: left !important;
 }
 .ItemComment::after, .ItemComment::before, .MessageList::before, .MessageList::after {
 	display: none !important;
