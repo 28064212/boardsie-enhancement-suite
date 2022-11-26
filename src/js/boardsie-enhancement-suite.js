@@ -104,7 +104,8 @@ if (window.top == window.self) {
 		// some pages load titlebar contents lazily
 		let observer = new MutationObserver(function (mutationsList, observer) { titleBarObserver(mutationsList, observer, categoriesPromise) });
 		observer.observe(titleBar, { childList: true });
-	} else if (titleBar) {
+	}
+	else if (titleBar) {
 		addCategoryListing(categoriesPromise);
 		menuItems();
 		moveBreadcrumbs();
@@ -182,14 +183,32 @@ function menuItems() {
 	let a = document.createElement('a');
 	a.innerHTML = '⚙';
 	a.id = 'settings-icon-28064212';
+	a.tabIndex = "0";
 	meBox.insertBefore(a, meBox.lastElementChild);
 	a.addEventListener('click', settingsModal);
 
 	a = document.createElement('a');
 	a.innerHTML = '⌨';
 	a.id = 'docs-icon-28064212';
+	a.tabIndex = "0";
 	meBox.insertBefore(a, meBox.lastElementChild);
 	a.addEventListener('click', docsModal);
+
+	a = document.createElement('a');
+	a.href = "/discussions/bookmarked";
+	a.id = 'bookmarks-icon-28064212';
+	a.tabIndex = "0";
+	meBox.insertBefore(a, meBox.lastElementChild);
+
+	let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+	svg.setAttribute("viewBox", "0 0 12.733 16.394");
+	svg.innerHTML = '<title>Bookmarks</title><path class="svgBookmark-mainPath" stroke-width="2" d="M1.05.5H11.683a.55.55,0,0,1,.55.55h0V15.341a.549.549,0,0,1-.9.426L6.714,12a.547.547,0,0,0-.7,0L1.4,15.767a.55.55,0,0,1-.9-.426V1.05A.55.55,0,0,1,1.05.5z"></path>';
+	svg.style.height = "16px";
+	svg.style.width = "12px";
+	svg.querySelector('path').style.stroke = "white";
+	svg.querySelector('path').style.fill = "rgb(59, 85, 134)";
+	//svg.querySelector('path').style.fill = "none";
+	a.appendChild(svg);
 
 	sep = document.createElement('div');
 	sep.classList.add('menu-separator-28064212');
@@ -941,7 +960,8 @@ function addThanksAfterPosts() {
 			let path = new URL(post.querySelector(".post-count a").href).pathname.replace('/discussion/', '');
 			let id = path.slice(0, path.indexOf('/'));
 			appendThanks(post, 'discussions', id);
-		} else if (post.querySelector('.HasCount')) {
+		}
+		else if (post.querySelector('.HasCount')) {
 			let id = post.id.replace('Comment_', '');
 			appendThanks(post, 'comments', id);
 		}
@@ -1229,13 +1249,15 @@ function keyShortcuts(key) {
 		if (ctrl && code == 32 && document.querySelector('button[title=Search]')) {
 			// Ctrl + Space - searchbox
 			document.querySelector('button[title=Search]').click()
-		} else if (code == 39) {
+		}
+		else if (code == 39) {
 			// → - next page, last page with shift
 			if (shift && document.querySelector('.Pager a.LastPage'))
 				location.href = document.querySelector('.Pager a.LastPage');
 			else if (document.querySelector('.Pager a.Next') != null)
 				location.href = document.querySelector('.Pager a.Next');
-		} else if (code == 37) {
+		}
+		else if (code == 37) {
 			// ← - previous page, first page with shift, parent forum with ctrl
 			if (shift && document.querySelector('.Pager a.FirstPage'))
 				location.href = document.querySelector('.Pager a.FirstPage');
@@ -1247,9 +1269,11 @@ function keyShortcuts(key) {
 					else if (items.length > 1)
 						location.href = items[items.length - 2];
 				}
-			} else if (document.querySelector('.Pager a.Previous'))
+			}
+			else if (document.querySelector('.Pager a.Previous'))
 				location.href = document.querySelector('.Pager a.Previous');
-		} else if (code == 65 || code == 90) {
+		}
+		else if (code == 65 || code == 90) {
 			// a/z - navigate forums/threads
 			let list = document.querySelectorAll('.forum-threadlist-table tbody tr, .module-wrapper tbody tr, .ItemComment, .ItemDiscussion, .Profile .DataList .Item');
 			if (list.length > 0) {
@@ -1272,7 +1296,8 @@ function keyShortcuts(key) {
 						}
 						if (index == -1)
 							index = list.length - 1;
-					} else if (code == 90) {
+					}
+					else if (code == 90) {
 						for (let j = 0; j < list.length && index == -1; j++) {
 							if (isElementInViewport(list[j]))
 								index = j;
@@ -1280,9 +1305,11 @@ function keyShortcuts(key) {
 						if (index == -1)
 							index = 0;
 					}
-				} else if (code == 65 && index > 0) {
+				}
+				else if (code == 65 && index > 0) {
 					index--;
-				} else if (code == 90 && index < list.length - 1) {
+				}
+				else if (code == 90 && index < list.length - 1) {
 					index++;
 				}
 				hl = list[index];
@@ -1292,12 +1319,14 @@ function keyShortcuts(key) {
 				if (!isElementInViewport(hl))
 					hl.scrollIntoView(code == 90);
 			}
-		} else if (!ctrl && code == 67) {
+		}
+		else if (!ctrl && code == 67) {
 			// c - display category menu
 			window.scrollTo(0, 0);
 			document.querySelector("a[to='/categories']").parentElement.dispatchEvent(new Event('mouseover'));
 			document.querySelector("#categories-28064212").focus();
-		} else if (!ctrl && code == 70) {
+		}
+		else if (!ctrl && code == 70) {
 			// f - follow/unfollow
 			if (document.querySelector('a.Bookmark') && location.pathname.startsWith('/discussion/')) {
 				if (document.querySelector('a.Bookmarked'))
@@ -1305,7 +1334,8 @@ function keyShortcuts(key) {
 				else
 					createAlert("Discussion bookmarked");
 				document.querySelector('a.Bookmark').click();
-			} else if (location.pathname.startsWith('/categories/') && document.querySelector('meta[name=catid]')) {
+			}
+			else if (location.pathname.startsWith('/categories/') && document.querySelector('meta[name=catid]')) {
 				let category = document.querySelector('meta[name=catid]').content;
 				let user = gdn.meta.ui.currentUser.userID;
 				fetch(api + "categories/" + category + "/preferences/" + user)
@@ -1334,10 +1364,12 @@ function keyShortcuts(key) {
 					})
 					.catch(e => console.log(e));
 			}
-		} else if (!ctrl && code == 76 && document.querySelector('#latest')) {
+		}
+		else if (!ctrl && code == 76 && document.querySelector('#latest')) {
 			// l - scroll to latest
 			document.querySelector('#latest').scrollIntoView();
-		} else if (!ctrl && code == 77) {
+		}
+		else if (!ctrl && code == 77) {
 			// m - Mark forum read
 			if (location.pathname.startsWith('/categories/') && document.querySelector('meta[name=catid]')) {
 				let category = document.querySelector('meta[name=catid]').content;
@@ -1349,63 +1381,77 @@ function keyShortcuts(key) {
 							u.classList.remove("unread")
 					});
 			}
-		} else if (!ctrl && code == 79) {
+		}
+		else if (!ctrl && code == 79) {
 			// o - open all unread threads
 			let threads = document.querySelectorAll('.forum-threadlist-thread');
 			for (let t of threads) {
 				if (t.querySelector('.HasNew'))
 					window.open(t.querySelector('a.threadbit-threadlink'));
 			}
-		} else if (!ctrl && code == 80 && hl && hl.getElementsByClassName('customspamlink').length > 0) {
+		}
+		else if (!ctrl && code == 80 && hl && hl.getElementsByClassName('customspamlink').length > 0) {
 			// p - Report spammer (if https://github.com/28064212/greasemonkey-scripts/raw/master/Boards.ie%20-%20Quick%20Spam%20Reporting.user.js also installed)
 			window.open(hl.getElementsByClassName('customspamlink')[0]);
-		} else if (code == 81 && hl) {
+		}
+		else if (code == 81 && hl) {
 			// q - open thread/forum or quote highlighted post
 			if (ctrl && hl.querySelector('.MiniPager') && hl.querySelector('.MiniPager').querySelector('a:first-of-type')) {
 				// first page
 				window.open(hl.querySelector('.MiniPager').querySelector('a:first-of-type'));
-			} else if (alt && hl.querySelector('.MiniPager') && hl.querySelector('.MiniPager').querySelector('a:last-of-type')) {
+			}
+			else if (alt && hl.querySelector('.MiniPager') && hl.querySelector('.MiniPager').querySelector('a:last-of-type')) {
 				// last page
 				window.open(hl.querySelector('.MiniPager').querySelector('a:last-of-type'));
-			} else if (hl.querySelector('.oplink-wrapper a, a.threadbit-threadlink')) {
+			}
+			else if (hl.querySelector('.oplink-wrapper a, a.threadbit-threadlink')) {
 				// last unread post
 				window.open(hl.querySelector('.oplink-wrapper a, a.threadbit-threadlink'));
-			} else if (hl.querySelector('a.Quote')) {
+			}
+			else if (hl.querySelector('a.Quote')) {
 				// quote highlighted post
 				hl.querySelector('a.Quote').click();
 				key.preventDefault();
 			}
-		} else if (!ctrl && code == 82) {
+		}
+		else if (!ctrl && code == 82) {
 			// r - reply to thread/post new thread
 			if (document.querySelector('.richEditor-text')) {
 				key.preventDefault();
 				document.querySelector('.richEditor-text').focus();
 				document.querySelector('.richEditor-text').scrollIntoView();
-			} else if (document.querySelector(".BoxNewDiscussion a"))
+			}
+			else if (document.querySelector(".BoxNewDiscussion a"))
 				document.querySelector(".BoxNewDiscussion a").click();
-		} else if (!ctrl && code == 83) {
+		}
+		else if (!ctrl && code == 83) {
 			// s - show/hide settings
 			settingsModal();
-		} else if (!ctrl && code == 84 && hl && hl.querySelector('.ReactButton-Like')) {
+		}
+		else if (!ctrl && code == 84 && hl && hl.querySelector('.ReactButton-Like')) {
 			// t - toggle thanks of highlighted post
 			hl.querySelector('.ReactButton-Like').click();
-		} else if (!ctrl && code == 88) {
+		}
+		else if (!ctrl && code == 88) {
 			// x - toggle previews display
 			showpreviews = !showpreviews;
 			if (hl.querySelector(".preview-28064212"))
 				hl.querySelector(".preview-28064212").style.display = showpreviews ? "block" : "none";
-		} else if (!ctrl && hl && code >= 48 && code <= 57) {
+		}
+		else if (!ctrl && hl && code >= 48 && code <= 57) {
 			// 0-9: open links
 			code = code == 48 ? 10 : code - 49;
 			if (hl.querySelectorAll('.postbit-postbody a:not(.ReactButton)').length > 0 && hl.querySelectorAll('.postbit-postbody a:not(.ReactButton)')[code])
 				window.open(hl.querySelectorAll('.postbit-postbody a:not(.ReactButton)')[code]);
-		} else if (!ctrl && code == 27) {
+		}
+		else if (!ctrl && code == 27) {
 			// esc - close settings/documentation
 			if (document.querySelector('#settings-28064212'))
 				document.querySelector('#settings-28064212').style.display = "none";
 			if (document.querySelector('#docs-28064212'))
 				document.querySelector('#docs-28064212').style.display = "none";
-		} else if (shift && code == 191) {
+		}
+		else if (shift && code == 191) {
 			// ? - show/hide documentation
 			docsModal();
 		}

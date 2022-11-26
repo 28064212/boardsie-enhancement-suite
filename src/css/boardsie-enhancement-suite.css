@@ -527,7 +527,7 @@ body {
 
 /* settings menu */
 
-#settings-icon-28064212, #docs-icon-28064212 {
+#settings-icon-28064212, #docs-icon-28064212, #bookmarks-icon-28064212 {
 	text-decoration: none !important;
 	height: 36px;
 	width: 36px;
@@ -536,13 +536,17 @@ body {
 	font-size: 24px;
 	border-radius: 6px;
 }
+#bookmarks-icon-28064212 {
+	position: relative;
+	top: 1px;
+}
 .menu-separator-28064212 {
 	height: 36px;
 	width: 1px;
 	margin: 0 4px;
 	background-color: white;
 }
-#settings-icon-28064212:hover, #docs-icon-28064212:hover {
+#settings-icon-28064212:hover, #docs-icon-28064212:hover, #bookmarks-icon-28064212:hover {
 	background-color: rgba(255, 255, 255, 0.1);
 }
 #settings-28064212 {
@@ -651,6 +655,7 @@ body:not([data-stickyheader]) #latest {
 .BreadcrumbsBox {
 	position: relative !important;
 	background-color: none !important;
+	z-index: 2 !important;
 }
 .Breadcrumbs {
 	border-bottom: none !important;
