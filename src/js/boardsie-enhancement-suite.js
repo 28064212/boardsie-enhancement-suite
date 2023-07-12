@@ -155,7 +155,7 @@ function flattenCategories(data, categories) {
 }
 
 function titleBarObserver(mutationList, observer, categoriesPromise) {
-	let catLink = document.querySelector("a[to='/categories']");
+	let catLink = document.querySelector("a[href='/categories'], a[href='https://www.boards.ie/categories']");
 	if (catLink) {
 		// if category link is available, we don't need to monitor anymore
 		if (observer)
@@ -1084,7 +1084,7 @@ function addBookmarkStatusToComments() {
 
 function addCategoryListing(categoriesPromise) {
 	categoriesPromise.then(data => {
-		let catLink = document.querySelector("a[to='/categories']");
+		let catLink = document.querySelector("a[href='/categories'], a[href='https://www.boards.ie/categories']");
 		let categories = document.createElement("div");
 		categories.id = "categories-28064212";
 		categories.style.display = "none";
@@ -1323,7 +1323,7 @@ function keyShortcuts(key) {
 		else if (!ctrl && code == 67) {
 			// c - display category menu
 			window.scrollTo(0, 0);
-			document.querySelector("a[to='/categories']").parentElement.dispatchEvent(new Event('mouseover'));
+			document.querySelector("a[href='/categories'], a[href='https://www.boards.ie/categories']").parentElement.dispatchEvent(new Event('mouseover'));
 			document.querySelector("#categories-28064212").focus();
 		}
 		else if (!ctrl && code == 70) {
