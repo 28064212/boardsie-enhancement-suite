@@ -701,7 +701,6 @@ function userHistory(categoriesPromise) {
 				.then(users => {
 					let userid = users && users[0] !== undefined ? users[0].userID : null;
 					if (userid) {
-						//fetch(api + 'comments?insertUserID=' + userid + '&sort=-dateInserted&page=' + page)
 						fetch(api + 'search?limit=30&insertUserIDs[0]=' + userid + '&sort=-dateInserted&types[0]=discussion&types[1]=comment&types[2]=poll&types[3]=question&types[4]=idea&page=' + page)
 							.then(response => {
 								if (response.ok)
@@ -789,16 +788,40 @@ function userHistory(categoriesPromise) {
 
 												let meta = document.createElement('p');
 												let title = document.createElement('a');
+												title.classList.add("threadbit-threadlink");
 												if (p.recordType == 'discussion') {
-													title.style.fontWeight = "bold";
+													meta.appendChild(document.createTextNode('• '));
 													td.insertBefore(meta, td.firstChild);
 												} else {
 													meta.appendChild(document.createTextNode('in '));
 													td.appendChild(meta);
 												}
+												if (discussion.unread)
+													title.style.fontWeight = "bold";
 												title.href = discussion.url;
 												title.appendChild(document.createTextNode(discussion.name));
 												meta.appendChild(title);
+
+												if (discussion.countUnread) {
+													let countUnread = document.createElement('span');
+													countUnread.classList.add("HasNew", "NewCommentCount");
+													countUnread.appendChild(document.createTextNode(discussion.countUnread + ' new'));
+													meta.appendChild(document.createTextNode(' '));
+													meta.appendChild(countUnread);
+												}
+
+												if (discussion.bookmarked) {
+													let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+													svg.setAttribute("viewBox", "0 0 12.733 16.394");
+													svg.innerHTML = '<title>Bookmark</title><path class="svgBookmark-mainPath" stroke-width="2" d="M1.05.5H11.683a.55.55,0,0,1,.55.55h0V15.341a.549.549,0,0,1-.9.426L6.714,12a.547.547,0,0,0-.7,0L1.4,15.767a.55.55,0,0,1-.9-.426V1.05A.55.55,0,0,1,1.05.5z"></path>';
+													svg.style.height = "16px";
+													svg.style.width = "12px";
+													svg.style.float = "right";
+													svg.style.marginLeft = "10px";
+													svg.querySelector('path').style.stroke = "rgb(59, 85, 134)";
+													svg.querySelector('path').style.fill = "rgb(59, 85, 134)";
+													td.insertBefore(svg, td.lastChild);
+												}
 
 												let postedCell = document.createElement('td');
 												postedCell.classList.add('postbit-postbody');
@@ -831,11 +854,25 @@ function userHistory(categoriesPromise) {
 										});
 								}
 							})
-							.catch(e => console.log(e));
+							.catch(e => {
+								console.log(e);
+								loadingRow.parentElement.removeChild(loadingRow);
+								let tr = document.createElement('tr');
+								let td = document.createElement('td');
+								td.classList.add('postbit-postbody');
+								tr.appendChild(td);
+								tbody.appendChild(tr);
+
+								let text = document.createElement('p');
+								text.appendChild(document.createTextNode('[Error searching for posts]'));
+								td.appendChild(text);
+							});
 					} else
 						loadingCell.textContent = '[User not found]';
 				})
-				.catch(e => console.log(e));
+				.catch(e => {
+					console.log(e);
+				});
 		});
 	}
 }
