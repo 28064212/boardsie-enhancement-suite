@@ -3,6 +3,7 @@ let showpreviews = false;
 let settings = {};
 let api = "https://www.boards.ie/api/v2/";
 let gdn = null;
+const version = '0.2.19';
 
 if (window.top == window.self) {
 	var port = browser.runtime.connect();
@@ -111,10 +112,10 @@ if (window.top == window.self) {
 		moveBreadcrumbs();
 	}
 
-	unboldReadThreads();
+	unboldReadDiscussions();
 	removeExternalLinkCheck();
 	addThanksAfterPosts();
-	addThreadPreviews();
+	addDiscussionPreviews();
 	userMenus();
 	//editableQuoting();
 	userHistory(categoriesPromise);
@@ -128,6 +129,21 @@ if (window.top == window.self) {
 	if (profileComments) {
 		let observer = new MutationObserver(addBookmarkStatusToComments);
 		observer.observe(profileComments, { childList: true, subtree: false });
+	}
+
+	if (location.pathname.startsWith('/categories/') && document.querySelector('meta[name=catid]')) {
+		let markread = document.createElement('span');
+		markread.appendChild(document.createTextNode('Mark Read ✓'));
+		markread.style.marginRight = '10px';
+		markread.style.padding = '5px';
+		markread.style.borderRadius = '5px';
+		markread.style.opacity = '1';
+		markread.style.setProperty('cursor', 'pointer', 'important');
+
+		let pager = document.querySelector('#PagerBefore');
+		pager.insertBefore(markread, pager.firstElementChild);
+
+		markread.addEventListener('click', markCategoryRead);
 	}
 }
 
@@ -219,8 +235,13 @@ function settingsModal() {
 	let settingsModal = document.querySelector('#settings-28064212');
 	if (settingsModal) {
 		settingsModal.style.display = settingsModal.style.display == 'none' ? 'block' : 'none';
-		if (settingsModal.style.display == 'block')
+		if (settingsModal.style.display == 'block') {
 			settingsModal.focus();
+			document.querySelectorAll('#settings-content-28064212 div[id*="settings-"]').forEach(d => d.style.display = 'none');
+			document.querySelectorAll('#settings-content-28064212 div p').forEach(p => p.style.textDecoration = 'none');
+			document.querySelector('#settings-content-28064212 div[id*="settings-"]').style.display = 'block';
+			document.querySelector('#settings-content-28064212 div p').style.textDecoration = 'underline';
+		}
 		else
 			document.activeElement.blur();
 	} else {
@@ -239,7 +260,9 @@ function settingsModal() {
 		header.innerHTML = "Boardsie Enhancement Suite - Settings";
 		content.appendChild(header);
 		let lhm = document.createElement("div");
-		lhm.innerHTML = "<p>Behaviour</p>";
+		lhm.innerHTML = `
+			<p data-for="settings-behaviours-28064212" style='text-decoration: underline'>Behaviour</p>
+			<p data-for="settings-about-28064212">About</p>`;
 		content.appendChild(lhm);
 
 		let behaviours = document.createElement('div');
@@ -292,6 +315,24 @@ function settingsModal() {
 				document.querySelector('#Form_Bookmarked').checked = false;
 			await browser.storage.sync.set({ "settings": settings });
 		});
+
+		let about = document.createElement('div');
+		about.style.display = "none"; // hide initially
+		about.classList.add("settings-values-28064212");
+		about.id = "settings-about-28064212";
+		content.appendChild(about);
+		about.innerHTML += '<p>Version: ' + version + '</p>';
+		about.innerHTML += '<p>Extension Homepage: <a href="https://github.com/28064212/boardsie-enhancement-suite" target="_blank">https://github.com/28064212/boardsie-enhancement-suite</p>';
+
+		let items = lhm.querySelectorAll('p');
+		for (const i of items) {
+			i.addEventListener('click', function (e) {
+				document.querySelectorAll('#settings-content-28064212 div[id*="settings-"]').forEach(div => div.style.display = 'none');
+				lhm.querySelectorAll('p').forEach(p => p.style.textDecoration = 'none');
+				document.querySelector('#' + i.dataset.for).style.display = "block";
+				this.style.textDecoration = 'underline';
+			});
+		}
 
 		settingsModal.focus();
 	}
@@ -363,12 +404,12 @@ function docsModal() {
 			</table>
 		</div>
 		<div class="docs-keygroup">
-			<p>Thread Lists</p>
+			<p>Discussion Lists</p>
 			<table>
 				<tbody>
 					<tr>
 						<td><kbd>q</kbd></td>
-						<td>Open highlighted thread</td>
+						<td>Open highlighted discussion</td>
 					</tr>
 					<tr>
 						<td><kbd>ctrl</kbd><kbd>q</kbd></td>
@@ -380,23 +421,23 @@ function docsModal() {
 					</tr>
 					<tr>
 						<td><kbd>r</kbd></td>
-						<td>Start a new thread</td>
+						<td>Start a new discussion</td>
 					</tr>
 					<tr>
 						<td><kbd>o</kbd></td>
-						<td>Open all unread threads</td>
+						<td>Open all unread discussion</td>
 					</tr>
 					<tr>
 						<td><kbd>f</kbd></td>
-						<td>Follow forum</td>
+						<td>Follow category</td>
 					</tr>
 					<tr>
 						<td><kbd>m</kbd></td>
-						<td>Mark forum read</td>
+						<td>Mark category read</td>
 					</tr>
 					<tr>
 						<td><kbd>x</kbd></td>
-						<td>Show thread preview</td>
+						<td>Show discussion preview</td>
 					</tr>
 				</tbody>
 			</table>
@@ -423,7 +464,7 @@ function docsModal() {
 					</tr>
 					<tr>
 						<td><kbd>f</kbd></td>
-						<td>Follow thread</td>
+						<td>Follow discussion</td>
 					</tr>
 					<tr>
 						<td><kbd>1-9</kbd></td>
@@ -453,7 +494,7 @@ function markCategoriesRead(categoriesPromise) {
 					let row = document.createElement('tr');
 					row.innerHTML = `<tr class="">
 					<td>
-						<div class="spritethreadbit spritethreadbit-threadunread" title="Thread has no unread posts"></div>
+						<div class="spritethreadbit spritethreadbit-threadunread" title="Discussion has no unread posts"></div>
 					</td>
 					<td id="CategoryName">
 						<div class="Wrap">
@@ -533,7 +574,7 @@ function markCategoriesRead(categoriesPromise) {
 	});
 }
 
-function unboldReadThreads() {
+function unboldReadDiscussions() {
 	for (let t of document.querySelectorAll('.forum-threadlist-thread')) {
 		if (t.querySelector('.HasNew') == null && t.querySelector('.unread') != null)
 			t.querySelector('.unread').classList.remove('unread');
@@ -907,7 +948,7 @@ function editableQuoting() {
 	}
 }
 
-function addThreadPreviews() {
+function addDiscussionPreviews() {
 	let links = document.querySelectorAll('a.threadbit-threadlink, .threadlink-wrapper a');
 	let discussions = [];
 	for (let l of links) {
@@ -942,7 +983,7 @@ function addThreadPreviews() {
 							preview.style.top = '28px';
 							parent.appendChild(preview);
 							preview.parentElement.title = '';
-							// unbolds read threads on homepage
+							// unbolds read discussions on homepage
 							if (d.unread == false) {
 								l.style.fontWeight = "normal";
 							}
@@ -1265,6 +1306,17 @@ function createAlert(msg) {
 	alertBox.appendChild(alert);
 }
 
+function markCategoryRead() {
+	let category = document.querySelector('meta[name=catid]').content;
+	let transientKey = gdn.meta.TransientKey;
+	fetch("https://www.boards.ie/category/markread?categoryid=" + category + "&tkey=" + transientKey)
+		.then(createAlert("Marked read"))
+		.then(d => {
+			for (let u of document.querySelectorAll(".unread"))
+				u.classList.remove("unread")
+		});
+}
+
 function isElementInViewport(el) {
 	let rect = el.getBoundingClientRect();
 	return (
@@ -1295,7 +1347,7 @@ function keyShortcuts(key) {
 				location.href = document.querySelector('.Pager a.Next');
 		}
 		else if (code == 37) {
-			// ← - previous page, first page with shift, parent forum with ctrl
+			// ← - previous page, first page with shift, parent category with ctrl
 			if (shift && document.querySelector('.Pager a.FirstPage'))
 				location.href = document.querySelector('.Pager a.FirstPage');
 			else if (ctrl) {
@@ -1311,7 +1363,7 @@ function keyShortcuts(key) {
 				location.href = document.querySelector('.Pager a.Previous');
 		}
 		else if (code == 65 || code == 90) {
-			// a/z - navigate forums/threads
+			// a/z - navigate categories/discussions
 			let list = document.querySelectorAll('.forum-threadlist-table tbody tr, .module-wrapper tbody tr, .ItemComment, .ItemDiscussion, .Profile .DataList .Item');
 			if (list.length > 0) {
 				if (hl) {
@@ -1367,7 +1419,7 @@ function keyShortcuts(key) {
 			// f - follow/unfollow
 			if (document.querySelector('a.Bookmark') && location.pathname.startsWith('/discussion/')) {
 				if (document.querySelector('a.Bookmarked'))
-					createAlert("Thread unfollowed");
+					createAlert("Discussion unfollowed");
 				else
 					createAlert("Discussion bookmarked");
 				document.querySelector('a.Bookmark').click();
@@ -1392,7 +1444,7 @@ function keyShortcuts(key) {
 							.then(response => {
 								if (response.ok) {
 									//alert
-									createAlert(toggle == "follow" ? "Forum followed" : "Forum unfollowed");
+									createAlert(toggle == "follow" ? "Category followed" : "Category unfollowed");
 									return response.json();
 								} else
 									throw new Error(response.statusText);
@@ -1407,24 +1459,16 @@ function keyShortcuts(key) {
 			document.querySelector('#latest').scrollIntoView();
 		}
 		else if (!ctrl && code == 77) {
-			// m - Mark forum read
-			if (location.pathname.startsWith('/categories/') && document.querySelector('meta[name=catid]')) {
-				let category = document.querySelector('meta[name=catid]').content;
-				let transientKey = gdn.meta.TransientKey;
-				fetch("https://www.boards.ie/category/markread?categoryid=" + category + "&tkey=" + transientKey)
-					.then(createAlert("Marked read"))
-					.then(d => {
-						for (let u of document.querySelectorAll(".unread"))
-							u.classList.remove("unread")
-					});
-			}
+			// m - Mark category read
+			if (location.pathname.startsWith('/categories/') && document.querySelector('meta[name=catid]'))
+				markCategoryRead();
 		}
 		else if (!ctrl && code == 79) {
-			// o - open all unread threads
-			let threads = document.querySelectorAll('.forum-threadlist-thread');
-			for (let t of threads) {
-				if (t.querySelector('.HasNew'))
-					window.open(t.querySelector('a.threadbit-threadlink'));
+			// o - open all unread discussions
+			let discussions = document.querySelectorAll('.forum-threadlist-thread');
+			for (let d of discussions) {
+				if (d.querySelector('.HasNew'))
+					window.open(d.querySelector('a.threadbit-threadlink'));
 			}
 		}
 		else if (!ctrl && code == 80 && hl && hl.getElementsByClassName('customspamlink').length > 0) {
@@ -1432,7 +1476,7 @@ function keyShortcuts(key) {
 			window.open(hl.getElementsByClassName('customspamlink')[0]);
 		}
 		else if (code == 81 && hl) {
-			// q - open thread/forum or quote highlighted post
+			// q - open discussion/category or quote highlighted post
 			if (ctrl && hl.querySelector('.MiniPager') && hl.querySelector('.MiniPager').querySelector('a:first-of-type')) {
 				// first page
 				window.open(hl.querySelector('.MiniPager').querySelector('a:first-of-type'));
@@ -1452,7 +1496,7 @@ function keyShortcuts(key) {
 			}
 		}
 		else if (!ctrl && code == 82) {
-			// r - reply to thread/post new thread
+			// r - reply to discussion/post new discussion
 			if (document.querySelector('.richEditor-text')) {
 				key.preventDefault();
 				document.querySelector('.richEditor-text').focus();

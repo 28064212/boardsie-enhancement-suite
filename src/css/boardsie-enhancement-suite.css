@@ -585,8 +585,9 @@ body {
 #settings-content-28064212>div:first-of-type {
 	border-right: 1px solid rgb(0, 0, 0, 0.4);
 }
-#settings-content-28064212>div p {
-	padding-bottom: 10px;
+#settings-content-28064212>div:first-of-type p {
+	margin-bottom: 10px;
+	cursor: pointer;
 }
 .settings-values-28064212 {
 	padding-left: 10px;
