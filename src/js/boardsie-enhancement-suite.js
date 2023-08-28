@@ -3,7 +3,7 @@ let showpreviews = false;
 let settings = {};
 let api = "https://www.boards.ie/api/v2/";
 let gdn = null;
-const version = '0.2.19';
+const version = '0.2.20';
 
 if (window.top == window.self) {
 	var port = browser.runtime.connect();
@@ -1169,8 +1169,12 @@ function addCategoryListing(categoriesPromise) {
 		categories.tabIndex = -1;
 		document.body.appendChild(categories);
 
-		catLink.parentElement.addEventListener("mouseover", function () {
-			categories.style.display = "block";
+		let timeout = null;
+		catLink.parentElement.parentElement.addEventListener("mouseout", function () {
+			clearTimeout(timeout);
+		});
+		catLink.parentElement.parentElement.addEventListener("mouseover", function () {
+			timeout = setTimeout(function () { categories.style.display = "block"; }, 250);
 		});
 		categories.addEventListener("mouseleave", function () {
 			categories.style.display = "none";
@@ -1412,7 +1416,7 @@ function keyShortcuts(key) {
 		else if (!ctrl && code == 67) {
 			// c - display category menu
 			window.scrollTo(0, 0);
-			document.querySelector("a[href='/categories'], a[href='https://www.boards.ie/categories']").parentElement.dispatchEvent(new Event('mouseover'));
+			document.querySelector("a[href='/categories'], a[href='https://www.boards.ie/categories']").parentElement.parentElement.dispatchEvent(new Event('mouseover'));
 			document.querySelector("#categories-28064212").focus();
 		}
 		else if (!ctrl && code == 70) {
