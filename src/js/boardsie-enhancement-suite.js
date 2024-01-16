@@ -3,7 +3,7 @@ let showpreviews = false;
 let settings = {};
 let api = "https://www.boards.ie/api/v2/";
 let gdn = null;
-const version = '0.2.21';
+const version = '0.2.22';
 
 if (window.top == window.self) {
 	var port = browser.runtime.connect();
