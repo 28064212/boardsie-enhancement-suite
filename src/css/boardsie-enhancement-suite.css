@@ -697,15 +697,20 @@ body .Reactions span, body .Reactions a {
 	background: var(--fg-link) !important;
 	color: white !important;
 }
-body[data-theme='dark'] .module-wrapper tbody .threadrow-container-zebra td {
-	background-color: var(--bg-quotes);
-	color: var(--fg) !important;
-}
-body[data-theme='dark'] .embedExternal, body[data-theme='dark'] .embedExternal [class$="collapsableContent"], body[data-theme='dark'] .richEditor-frame, body[data-theme='dark'] .richEditor-menuItem button {
+body[data-theme='dark'] .module-wrapper tbody .threadrow-container-zebra td,
+body[data-theme='dark'] .module-wrapper th,
+body[data-theme='dark'] .Breadcrumbs, body[data-theme='dark'] .BreadcrumbsBox, body[data-theme='dark'] header .Frame-row,
+body[data-theme='dark'] .forum-threadlist-table th, 
+body[data-theme='dark'] .Pager span, body[data-theme='dark'] .Pager .Highlight,
+body[data-theme='dark'] .DraftButton {
 	background-color: var(--bg-quotes) !important;
 	color: var(--fg) !important;
 }
-body[data-theme='dark'] a, body[data-theme='dark'] a:not(.original-poster-28064212) .usertitle-28064212 {
+body[data-theme='dark'] .embedExternal, body[data-theme='dark'] .embedExternal [class*="quoteEmbed"], body[data-theme='dark'] .embedExternal [class*="quoteEmbed"] .userContent p, body[data-theme='dark'] .embedExternal [class*="collapsableContent"], body[data-theme='dark'] .richEditor-frame, body[data-theme='dark'] .richEditor-menuItem button {
+	background-color: var(--bg-quotes) !important;
+	color: var(--fg) !important;
+}
+body[data-theme='dark'] a:not(.ReactButton), body[data-theme='dark'] a:not(.original-poster-28064212) .usertitle-28064212 {
 	color: var(--fg-link) !important;
 }
 body[data-theme='dark'] td, body[data-theme='dark'] table {
