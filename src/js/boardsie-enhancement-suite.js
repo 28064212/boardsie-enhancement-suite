@@ -116,6 +116,14 @@ if (window.top == window.self) {
 	removeExternalLinkCheck();
 	addThanksAfterPosts();
 	addDiscussionPreviews();
+	let homeTabs = document.querySelector('#homepage-tabs');
+	if (homeTabs) {
+		for (let t of homeTabs.querySelectorAll('li')) {
+			t.addEventListener('click', function () {
+				addDiscussionPreviews();
+			});
+		}
+	}
 	userMenus();
 	//editableQuoting();
 	userHistory(categoriesPromise);
@@ -812,85 +820,90 @@ function userHistory(categoriesPromise) {
 											table.insertBefore(header, table.firstChild);
 
 											for (let p of posts) {
-												let discussion = data[0].find(item => item.discussionID == p.discussionID);
-												let comment = data[1].find(item => item.commentID == p.recordID);
+												try {
+													let discussion = data[0].find(item => item.discussionID == p.discussionID);
+													let comment = data[1].find(item => item.commentID == p.recordID);
 
-												let tr = document.createElement('tr');
-												tbody.appendChild(tr);
+													let tr = document.createElement('tr');
+													tbody.appendChild(tr);
 
-												let td = document.createElement('td');
-												td.classList.add('postbit-postbody');
-												tr.appendChild(td);
+													let td = document.createElement('td');
+													td.classList.add('postbit-postbody');
+													tr.appendChild(td);
 
-												let text = document.createElement('p');
-												let body = p.bodyPlainText.trim();
-												text.appendChild(document.createTextNode(body.substring(0, charsToDisplay - 1) + (body.length > charsToDisplay ? '...' : '')));
-												td.appendChild(text);
+													let text = document.createElement('p');
+													let body = p.bodyPlainText.trim();
+													text.appendChild(document.createTextNode(body.substring(0, charsToDisplay - 1) + (body.length > charsToDisplay ? '...' : '')));
+													td.appendChild(text);
 
-												let meta = document.createElement('p');
-												let title = document.createElement('a');
-												title.classList.add("threadbit-threadlink");
-												if (p.recordType == 'discussion') {
-													meta.appendChild(document.createTextNode('• '));
-													td.insertBefore(meta, td.firstChild);
-												} else {
-													meta.appendChild(document.createTextNode('in '));
-													td.appendChild(meta);
+													let meta = document.createElement('p');
+													let title = document.createElement('a');
+													title.classList.add("threadbit-threadlink");
+													if (p.recordType == 'discussion') {
+														meta.appendChild(document.createTextNode('• '));
+														td.insertBefore(meta, td.firstChild);
+													} else {
+														meta.appendChild(document.createTextNode('in '));
+														td.appendChild(meta);
+													}
+													if (discussion.unread)
+														title.style.fontWeight = "bold";
+													title.href = discussion.url;
+													title.appendChild(document.createTextNode(discussion.name));
+													meta.appendChild(title);
+
+													if (discussion.countUnread) {
+														let countUnread = document.createElement('span');
+														countUnread.classList.add("HasNew", "NewCommentCount");
+														countUnread.appendChild(document.createTextNode(discussion.countUnread + ' new'));
+														meta.appendChild(document.createTextNode(' '));
+														meta.appendChild(countUnread);
+													}
+
+													if (discussion.bookmarked) {
+														let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+														svg.setAttribute("viewBox", "0 0 12.733 16.394");
+														svg.innerHTML = '<title>Bookmark</title><path class="svgBookmark-mainPath" stroke-width="2" d="M1.05.5H11.683a.55.55,0,0,1,.55.55h0V15.341a.549.549,0,0,1-.9.426L6.714,12a.547.547,0,0,0-.7,0L1.4,15.767a.55.55,0,0,1-.9-.426V1.05A.55.55,0,0,1,1.05.5z"></path>';
+														svg.style.height = "16px";
+														svg.style.width = "12px";
+														svg.style.float = "right";
+														svg.style.marginLeft = "10px";
+														svg.querySelector('path').style.stroke = "rgb(59, 85, 134)";
+														svg.querySelector('path').style.fill = "rgb(59, 85, 134)";
+														td.insertBefore(svg, td.lastChild);
+													}
+
+													let postedCell = document.createElement('td');
+													postedCell.classList.add('postbit-postbody');
+													let timestamp = document.createElement('a');
+													timestamp.href = p.url;
+													let t = new Date(p.dateInserted);
+													let tFormatted = (t.getFullYear().toString() + "-" + ("0" + (t.getMonth() + 1)).slice(-2) + "-" + ("0" + t.getDate()).slice(-2) + " " + ("0" + t.getHours()).slice(-2) + ":" + ("0" + t.getMinutes()).slice(-2));
+													timestamp.appendChild(document.createTextNode(tFormatted));
+													postedCell.appendChild(timestamp);
+													postedCell.style.whiteSpace = "nowrap";
+													tr.appendChild(postedCell);
+
+													let catCell = document.createElement('td');
+													catCell.classList.add('postbit-postbody');
+													let cat = categories.find(d => d.id == p.categoryID)
+													let category = document.createElement('a');
+													category.appendChild(document.createTextNode(cat.name));
+													category.href = cat.url;
+													catCell.appendChild(category)
+													tr.appendChild(catCell);
+
+													let thanks = document.createElement('td');
+													thanks.classList.add('postbit-postbody');
+													tr.appendChild(thanks);
+													if (p.recordType == 'discussion')
+														thanks.appendChild(document.createTextNode(discussion.score == null ? "-" : discussion.score));
+													else
+														thanks.appendChild(document.createTextNode(comment.score == null ? "-" : comment.score));
 												}
-												if (discussion.unread)
-													title.style.fontWeight = "bold";
-												title.href = discussion.url;
-												title.appendChild(document.createTextNode(discussion.name));
-												meta.appendChild(title);
-
-												if (discussion.countUnread) {
-													let countUnread = document.createElement('span');
-													countUnread.classList.add("HasNew", "NewCommentCount");
-													countUnread.appendChild(document.createTextNode(discussion.countUnread + ' new'));
-													meta.appendChild(document.createTextNode(' '));
-													meta.appendChild(countUnread);
+												catch (e) {
+													console.log(e);
 												}
-
-												if (discussion.bookmarked) {
-													let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-													svg.setAttribute("viewBox", "0 0 12.733 16.394");
-													svg.innerHTML = '<title>Bookmark</title><path class="svgBookmark-mainPath" stroke-width="2" d="M1.05.5H11.683a.55.55,0,0,1,.55.55h0V15.341a.549.549,0,0,1-.9.426L6.714,12a.547.547,0,0,0-.7,0L1.4,15.767a.55.55,0,0,1-.9-.426V1.05A.55.55,0,0,1,1.05.5z"></path>';
-													svg.style.height = "16px";
-													svg.style.width = "12px";
-													svg.style.float = "right";
-													svg.style.marginLeft = "10px";
-													svg.querySelector('path').style.stroke = "rgb(59, 85, 134)";
-													svg.querySelector('path').style.fill = "rgb(59, 85, 134)";
-													td.insertBefore(svg, td.lastChild);
-												}
-
-												let postedCell = document.createElement('td');
-												postedCell.classList.add('postbit-postbody');
-												let timestamp = document.createElement('a');
-												timestamp.href = p.url;
-												let t = new Date(p.dateInserted);
-												let tFormatted = (t.getFullYear().toString() + "-" + ("0" + (t.getMonth() + 1)).slice(-2) + "-" + ("0" + t.getDate()).slice(-2) + " " + ("0" + t.getHours()).slice(-2) + ":" + ("0" + t.getMinutes()).slice(-2));
-												timestamp.appendChild(document.createTextNode(tFormatted));
-												postedCell.appendChild(timestamp);
-												postedCell.style.whiteSpace = "nowrap";
-												tr.appendChild(postedCell);
-
-												let catCell = document.createElement('td');
-												catCell.classList.add('postbit-postbody');
-												let cat = categories.find(d => d.id == p.categoryID)
-												let category = document.createElement('a');
-												category.appendChild(document.createTextNode(cat.name));
-												category.href = cat.url;
-												catCell.appendChild(category)
-												tr.appendChild(catCell);
-
-												let thanks = document.createElement('td');
-												thanks.classList.add('postbit-postbody');
-												tr.appendChild(thanks);
-												if (p.recordType == 'discussion')
-													thanks.appendChild(document.createTextNode(discussion.score == null ? "-" : discussion.score));
-												else
-													thanks.appendChild(document.createTextNode(comment.score == null ? "-" : comment.score));
 											}
 										});
 								}
@@ -949,7 +962,7 @@ function editableQuoting() {
 }
 
 function addDiscussionPreviews() {
-	let links = document.querySelectorAll('a.threadbit-threadlink, .threadlink-wrapper a');
+	let links = document.querySelectorAll('a.threadbit-threadlink:not(.previewed-28064212), .tabs-container div[style="display: block;"] .threadlink-wrapper a:not(.previewed-28064212)');
 	let discussions = [];
 	for (let l of links) {
 		let path = new URL(l.href).pathname.replace('/discussion/', '');
@@ -999,6 +1012,7 @@ function addDiscussionPreviews() {
 						l.addEventListener('mouseout', function (e) {
 							preview.style.display = "none";
 						});
+						l.classList.add('previewed-28064212');
 
 						try {
 							//update last post link
@@ -1368,7 +1382,7 @@ function keyShortcuts(key) {
 		}
 		else if (code == 65 || code == 90) {
 			// a/z - navigate categories/discussions
-			let list = document.querySelectorAll('.forum-threadlist-table tbody tr, .module-wrapper tbody tr, .ItemComment, .ItemDiscussion, .Profile .DataList .Item');
+			let list = document.querySelectorAll('.forum-threadlist-table tbody tr, .tabs-container div[style="display: block;"] .module-wrapper tbody tr, .ItemComment, .ItemDiscussion, .Profile .DataList .Item');
 			if (list.length > 0) {
 				if (hl) {
 					hl.classList.remove('highlight-28064212');
@@ -1423,7 +1437,7 @@ function keyShortcuts(key) {
 			// f - follow/unfollow
 			if (document.querySelector('a.Bookmark') && location.pathname.startsWith('/discussion/')) {
 				if (document.querySelector('a.Bookmarked'))
-					createAlert("Discussion unfollowed");
+					createAlert("Discussion bookmark removed");
 				else
 					createAlert("Discussion bookmarked");
 				document.querySelector('a.Bookmark').click();
