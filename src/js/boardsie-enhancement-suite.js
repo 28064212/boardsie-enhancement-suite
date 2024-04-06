@@ -1,23 +1,11 @@
 let index = -1;
 let showpreviews = false;
 let settings = {};
+let userDetails;
 let api = "https://www.boards.ie/api/v2/";
-let gdn = null;
 const version = '0.2.22';
 
 if (window.top == window.self) {
-	var port = browser.runtime.connect();
-	window.addEventListener("message", (event) => {
-		// We only accept messages from ourselves
-		if (event.source != window)
-			return;
-		gdn = JSON.parse(event.data)
-		highlightOP();
-	}, false);
-	let s = document.createElement('script');
-	s.textContent = 'window.postMessage(JSON.stringify(gdn));';
-	document.body.appendChild(s);
-
 	try {
 		document.querySelector('#themeFooter').shadowRoot.querySelector('.footer').style.background = "inherit";
 		document.querySelector('#themeFooter').shadowRoot.querySelector('.footer').style.color = "inherit";
@@ -113,6 +101,7 @@ if (window.top == window.self) {
 	}
 
 	unboldReadDiscussions();
+	highlightOP();
 	removeExternalLinkCheck();
 	addThanksAfterPosts();
 	addDiscussionPreviews();
@@ -153,6 +142,15 @@ if (window.top == window.self) {
 
 		markread.addEventListener('click', markCategoryRead);
 	}
+
+	userDetails = fetch(api + "users/me")
+		.then(response => {
+			if (response.ok)
+				return response.json();
+			else
+				throw new Error(response.statusText);
+		})
+		.catch(e => console.log(e));
 }
 
 function flattenCategories(data, categories) {
@@ -1049,27 +1047,29 @@ function addDiscussionPreviews() {
 function addThanksAfterPosts(post) {
 	if (post !== undefined) {
 		// post argument passed => thanks button was clicked
-		let thankers = [];
-		if (post.querySelector(".thanks-28064212")) {
-			thankers = Array.from(post.querySelector(".thanks-28064212").querySelectorAll("a"));
-			let me = thankers.find(m => m.textContent == '28064212');
-			if (me)
-				thankers.splice(thankers.indexOf(me), 1);
+		userDetails.then(data => {
+			let thankers = [];
+			if (post.querySelector(".thanks-28064212")) {
+				thankers = Array.from(post.querySelector(".thanks-28064212").querySelectorAll("a"));
+				let me = thankers.find(m => m.textContent == data.name);
+				if (me)
+					thankers.splice(thankers.indexOf(me), 1);
+				else {
+					let link = document.createElement('a');
+					link.href = "/profile/" + data.name;
+					link.textContent = data.name;
+					thankers.push(link);
+				}
+				appendThanks(post, thankers);
+			}
 			else {
 				let link = document.createElement('a');
-				link.href = "";
-				link.textContent = "28064212";
+				link.href = "/profile/" + data.name;
+				link.textContent = data.name;
 				thankers.push(link);
+				appendThanks(post, thankers);
 			}
-			appendThanks(post, thankers);
-		}
-		else {
-			let link = document.createElement('a');
-			link.href = "";
-			link.textContent = "28064212";
-			thankers.push(link);
-			appendThanks(post, thankers);
-		}
+		});
 	}
 	else {
 		// only called with no args on page load, will need to get and add thanks to all posts
@@ -1158,8 +1158,8 @@ function appendThanks(post, linksList) {
 }
 
 function highlightOP() {
-	if (gdn && gdn.meta.DiscussionID) {
-		fetch(api + 'discussions/' + gdn.meta.DiscussionID)
+	if (document.head.querySelector('meta[name="threadid"]') && document.head.querySelector('meta[name="threadid"]').getAttribute("content")) {
+		fetch(api + 'discussions/' + document.head.querySelector('meta[name="threadid"]').getAttribute("content"))
 			.then(response => {
 				if (response.ok)
 					return response.json();
@@ -1389,7 +1389,8 @@ function createAlert(msg) {
 
 function markCategoryRead() {
 	let category = document.querySelector('meta[name=catid]').content;
-	let transientKey = gdn.meta.TransientKey;
+	let bookmarkLink = document.querySelector('a.Bookmark').href;
+	let transientKey = bookmarkLink.slice(bookmarkLink.lastIndexOf('/') + 1);
 	fetch("https://www.boards.ie/category/markread?categoryid=" + category + "&tkey=" + transientKey)
 		.then(createAlert("Marked read"))
 		.then(d => {
@@ -1507,32 +1508,33 @@ function keyShortcuts(key) {
 			}
 			else if (location.pathname.startsWith('/categories/') && document.querySelector('meta[name=catid]')) {
 				let category = document.querySelector('meta[name=catid]').content;
-				let user = gdn.meta.ui.currentUser.userID;
-				fetch(api + "categories/" + category + "/preferences/" + user)
-					.then(response => {
-						if (response.ok)
-							return response.json();
-						else
-							throw new Error(response.statusText);
-					})
-					.then(data => {
-						let toggle = data.postNotifications ? null : "follow";
-						fetch(api + "categories/" + category + "/preferences/" + user, {
-							method: "PATCH",
-							body: JSON.stringify({ postNotifications: toggle }),
-							headers: { "Content-type": "application/json; charset=UTF-8" }
+				userDetails.then(data => {
+					let user = data.userID;
+					fetch(api + "categories/" + category + "/preferences/" + user)
+						.then(response => {
+							if (response.ok)
+								return response.json();
+							else
+								throw new Error(response.statusText);
 						})
-							.then(response => {
-								if (response.ok) {
-									//alert
-									createAlert(toggle == "follow" ? "Category followed" : "Category unfollowed");
-									return response.json();
-								} else
-									throw new Error(response.statusText);
+						.then(data => {
+							let toggle = !data["preferences.followed"];
+							fetch(api + "categories/" + category + "/preferences/" + user, {
+								method: "PATCH",
+								body: JSON.stringify({ "preferences.followed": toggle }),
+								headers: { "Content-type": "application/json; charset=UTF-8" }
 							})
-							.catch(e => console.log(e));
-					})
-					.catch(e => console.log(e));
+								.then(response => {
+									if (response.ok) {
+										createAlert(toggle ? "Category followed" : "Category unfollowed");
+										return response.json();
+									} else
+										throw new Error(response.statusText);
+								})
+								.catch(e => console.log(e));
+						})
+						.catch(e => console.log(e));
+				});
 			}
 		}
 		else if (!ctrl && code == 76 && document.querySelector('#latest')) {
