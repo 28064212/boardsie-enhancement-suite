@@ -3,7 +3,7 @@ let showpreviews = false;
 let settings = {};
 let userDetails;
 let api = "https://www.boards.ie/api/v2/";
-const version = '0.2.22';
+const version = '0.2.24';
 
 if (window.top == window.self) {
 	try {
