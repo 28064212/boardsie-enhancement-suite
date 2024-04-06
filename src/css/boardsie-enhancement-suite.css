@@ -174,7 +174,7 @@ a[to='/categories']::after {
 	line-height: 18px;
 	align-items: center;
 }
-.Reactions .ReactButton.Quote, .Reactions .ReactButton.ReactButton-Like, .Reactions .FlagMenu.ToggleFlyout, .reactions-28064212 {
+.Reactions .ReactButton.Quote, .Reactions .ReactButton.ReactButton-Like.thanks-listener-28064212, .Reactions .FlagMenu.ToggleFlyout, .reactions-28064212 {
 	border-radius: 4px !important;
 	width: auto !important;
 	padding-left: 10px !important;

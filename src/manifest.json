@@ -1,5 +1,5 @@
 {
-	"manifest_version": 2,
+	"manifest_version": 3,
 	"name": "Boardsie Enhancement Suite",
 	"version": "0.2.23",
 	"description": "Enhancements for Boards.ie",
@@ -35,28 +35,3 @@
 		}
 	]
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
