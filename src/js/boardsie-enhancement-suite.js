@@ -1046,21 +1046,70 @@ function addDiscussionPreviews() {
 	}
 }
 
-function addThanksAfterPosts() {
-	for (let post of document.querySelectorAll('.ItemComment, .ItemDiscussion')) {
-		if (post.classList.contains('ItemDiscussion') && post.querySelector('.HasCount')) {
-			let path = new URL(post.querySelector(".post-count a").href).pathname.replace('/discussion/', '');
-			let id = path.slice(0, path.indexOf('/'));
-			appendThanks(post, 'discussions', id);
+function addThanksAfterPosts(post) {
+	if (post !== undefined) {
+		// post argument passed => thanks button was clicked
+		let thankers = [];
+		if (post.querySelector(".thanks-28064212")) {
+			thankers = Array.from(post.querySelector(".thanks-28064212").querySelectorAll("a"));
+			let me = thankers.find(m => m.textContent == '28064212');
+			if (me)
+				thankers.splice(thankers.indexOf(me), 1);
+			else {
+				let link = document.createElement('a');
+				link.href = "";
+				link.textContent = "28064212";
+				thankers.push(link);
+			}
+			appendThanks(post, thankers);
 		}
-		else if (post.querySelector('.HasCount')) {
-			let id = post.id.replace('Comment_', '');
-			appendThanks(post, 'comments', id);
+		else {
+			let link = document.createElement('a');
+			link.href = "";
+			link.textContent = "28064212";
+			thankers.push(link);
+			appendThanks(post, thankers);
+		}
+	}
+	else {
+		// only called with no args on page load, will need to get and add thanks to all posts
+		let posts = document.querySelectorAll('.ItemComment, .ItemDiscussion');
+		for (let p of posts) {
+			// add eventListener to update thanks list when button is clicked
+			p.querySelector('.ReactButton-Like').addEventListener("click", function () {
+				addThanksAfterPosts(p);
+			});
+			p.querySelector('.ReactButton-Like').classList.add("thanks-listener-28064212");
+			// have to re-add eventListener each time, clicking button deletes and re-creates it, so observe the post
+			let observer = new MutationObserver(function (mutationsList, observer) { thanksObserver(mutationsList, observer, p) });
+			observer.observe(p, { childList: true, subtree: true });
+			if (p.classList.contains('ItemDiscussion')) {
+				let path = new URL(p.querySelector(".post-count a").href).pathname.replace('/discussion/', '');
+				let id = path.slice(0, path.indexOf('/'));
+				getThanks(p, 'discussions', id);
+			}
+			else {
+				let id = p.id.replace('Comment_', '');
+				getThanks(p, 'comments', id);
+			}
 		}
 	}
 }
 
-function appendThanks(element, type, id) {
+function thanksObserver(mutationsList, observer, p) {
+	let thanksButton = p.querySelector('.ReactButton-Like');
+	if (thanksButton) {
+		thanksButton.blur();
+		if (!thanksButton.classList.contains('thanks-listener-28064212')) {
+			thanksButton.addEventListener("click", function () {
+				addThanksAfterPosts(p);
+			});
+			thanksButton.classList.add("thanks-listener-28064212");
+		}
+	}
+}
+
+function getThanks(element, type, id) {
 	fetch(api + type + '/' + id + '/reactions?limit=100&type=Like')
 		.then(response => {
 			if (response.ok)
@@ -1069,29 +1118,43 @@ function appendThanks(element, type, id) {
 				throw new Error(response.statusText);
 		})
 		.then(data => {
-			let thankscontainer = document.createElement('div');
-			thankscontainer.classList.add('thanks-28064212')
-			element.appendChild(thankscontainer);
-
-			let thankscount = document.createElement('div');
-			thankscount.innerText = "Thanks (" + data.length + ")";
-			thankscontainer.appendChild(thankscount);
-
-			data.sort(function (a, b) {
-				return a.user.name.toLowerCase().localeCompare(b.user.name.toLowerCase());
-			});
-			let thankers = document.createElement('div');
-			thankscontainer.appendChild(thankers);
-			for (let d of data) {
-				let link = document.createElement('a');
-				link.href = d.user.url;
-				link.textContent = d.user.name;
-				thankers.appendChild(link);
-				thankers.appendChild(document.createTextNode(", "));
+			if (data.length > 0) {
+				let links = [];
+				for (let d of data) {
+					let link = document.createElement('a');
+					link.href = d.user.url;
+					link.textContent = d.user.name;
+					links.push(link);
+				}
+				appendThanks(element, links);
 			}
-			thankers.removeChild(thankers.lastChild);
 		})
 		.catch(error => console.log(error));
+}
+
+function appendThanks(post, linksList) {
+	if (post.querySelector(".thanks-28064212"))
+		post.querySelector(".thanks-28064212").remove();
+	if (linksList.length > 0) {
+		linksList.sort(function (a, b) {
+			return a.textContent.toLowerCase().localeCompare(b.textContent.toLowerCase());
+		});
+		let thankscontainer = document.createElement('div');
+		thankscontainer.classList.add('thanks-28064212')
+		post.appendChild(thankscontainer);
+
+		let thankscount = document.createElement('div');
+		thankscount.innerText = "Thanks (" + linksList.length + ")";
+		thankscontainer.appendChild(thankscount);
+
+		let thankers = document.createElement('div');
+		thankscontainer.appendChild(thankers);
+		for (let l of linksList) {
+			thankers.appendChild(l);
+			thankers.appendChild(document.createTextNode(", "));
+		}
+		thankers.removeChild(thankers.lastChild);
+	}
 }
 
 function highlightOP() {
@@ -1515,10 +1578,10 @@ function keyShortcuts(key) {
 		}
 		else if (!ctrl && code == 82) {
 			// r - reply to discussion/post new discussion
-			if (document.querySelector('.richEditor-text')) {
+			if (document.querySelector('.richEditor-text, .richEditor')) {
 				key.preventDefault();
-				document.querySelector('.richEditor-text').focus();
-				document.querySelector('.richEditor-text').scrollIntoView();
+				document.querySelector('.richEditor-text, .richEditor').focus();
+				document.querySelector('.richEditor-text, .richEditor').scrollIntoView();
 			}
 			else if (document.querySelector(".BoxNewDiscussion a"))
 				document.querySelector(".BoxNewDiscussion a").click();
