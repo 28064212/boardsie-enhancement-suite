@@ -22,8 +22,7 @@ if (window.top == window.self) {
 		document.querySelector('#themeFooter').shadowRoot.querySelector('.footer').style.color = "inherit";
 		if (!(location.pathname == '/' || location.pathname.startsWith("/profile/edit/")))
 			document.querySelector('.Panel.Panel-main').style.display = "none";
-	}
-	catch (e) { }
+	} catch (e) { }
 
 	(async () => {
 		storage = await browser.storage.sync.get();
@@ -105,8 +104,7 @@ if (window.top == window.self) {
 		// some pages load titlebar contents lazily
 		let observer = new MutationObserver(function (mutationsList, observer) { titleBarObserver(mutationsList, observer, categoriesPromise) });
 		observer.observe(titleBar, { childList: true });
-	}
-	else if (titleBar) {
+	} else if (titleBar) {
 		addCategoryListing(categoriesPromise);
 		menuItems();
 		moveBreadcrumbs();
@@ -131,31 +129,30 @@ if (window.top == window.self) {
 		observer.observe(profileComments, { childList: true, subtree: false });
 	}
 }
+
 function flattenCategories(data, categories) {
 	if (Array.isArray(data)) {
 		for (let d of data) {
 			let urlcode = d.urlcode == null ? d.urlCode : d.urlcode;
 			categories.push({ "id": d.categoryID, "parent": d.parentCategoryID, "name": d.name, "slug": urlcode, "followed": d.followed, "depth": d.depth, "url": d.url });
-			if (d.children)
-			{
-				if((Array.isArray(d.children) && d.children.length > 0) || Object.keys(d.children).length > 0)
+			if (d.children) {
+				if ((Array.isArray(d.children) && d.children.length > 0) || Object.keys(d.children).length > 0)
 					flattenCategories(d.children, categories)
 			}
 		}
-	}
-	else {
+	} else {
 		for (let d in data) {
 			d = data[d];
 			let urlcode = d.urlcode == null ? d.urlCode : d.urlcode;
 			categories.push({ "id": d.categoryID, "parent": d.parentCategoryID, "name": d.name, "slug": urlcode, "followed": d.followed, "depth": d.depth, "url": d.url });
-			if (d.children)
-			{
-				if((Array.isArray(d.children) && d.children.length > 0) || Object.keys(d.children).length > 0)
+			if (d.children) {
+				if ((Array.isArray(d.children) && d.children.length > 0) || Object.keys(d.children).length > 0)
 					flattenCategories(d.children, categories)
 			}
 		}
 	}
 }
+
 function titleBarObserver(mutationList, observer, categoriesPromise) {
 	let catLink = document.querySelector("a[to='/categories']");
 	if (catLink) {
@@ -167,12 +164,14 @@ function titleBarObserver(mutationList, observer, categoriesPromise) {
 		moveBreadcrumbs();
 	}
 }
+
 function moveBreadcrumbs() {
 	// needed for sticky header, puts the breadcrumbs within the header
 	let breadBox = document.querySelector('.Frame-row');
 	let header = document.querySelector('#titleBar');
 	header.appendChild(breadBox);
 }
+
 function menuItems() {
 	let meBox = document.querySelector('.meBox');
 
@@ -196,6 +195,7 @@ function menuItems() {
 	sep.classList.add('menu-separator-28064212');
 	meBox.insertBefore(sep, meBox.lastElementChild);
 }
+
 function settingsModal() {
 	let settingsModal = document.querySelector('#settings-28064212');
 	if (settingsModal) {
@@ -204,8 +204,7 @@ function settingsModal() {
 			settingsModal.focus();
 		else
 			document.activeElement.blur();
-	}
-	else {
+	} else {
 		settingsModal = document.createElement('div');
 		settingsModal.id = 'settings-28064212';
 		settingsModal.tabIndex = "-1";
@@ -278,6 +277,7 @@ function settingsModal() {
 		settingsModal.focus();
 	}
 }
+
 function docsModal() {
 	let docsModal = document.querySelector('#docs-28064212');
 	if (docsModal == null) {
@@ -417,6 +417,7 @@ function docsModal() {
 	}
 	docsModal.style.display = docsModal.style.display == 'none' ? 'block' : 'none';
 }
+
 function markCategoriesRead(categoriesPromise) {
 	let catFollowedPage = location.pathname == '/categories' && document.querySelector('.selectBox-selected').textContent == 'Following';
 	let listed = document.querySelectorAll("h2.CategoryNameHeading a");
@@ -437,7 +438,7 @@ function markCategoriesRead(categoriesPromise) {
 					</td>
 					<td id="CategoryName">
 						<div class="Wrap">
-							<h2 aria-level='3' class='CategoryNameHeading'><a href="`+ f.url + `" class="threadbit-threadlink">` + f.name + `</a></h2>
+							<h2 aria-level='3' class='CategoryNameHeading'><a href="` + f.url + `" class="threadbit-threadlink">` + f.name + `</a></h2>
 						</div>
 					</td>
 					<td class="forum-threadlist-lastpost">
@@ -504,8 +505,7 @@ function markCategoriesRead(categoriesPromise) {
 						l.style.opacity = "1";
 					})
 					.catch(e => console.log(e));
-			}
-			else {
+			} else {
 				l.style.transition = "opacity 750ms linear";
 				l.style.opacity = "1";
 				l.style.fontStyle = "italic";
@@ -513,12 +513,14 @@ function markCategoriesRead(categoriesPromise) {
 		}
 	});
 }
+
 function unboldReadThreads() {
 	for (let t of document.querySelectorAll('.forum-threadlist-thread')) {
 		if (t.querySelector('.HasNew') == null && t.querySelector('.unread') != null)
 			t.querySelector('.unread').classList.remove('unread');
 	}
 }
+
 function removeExternalLinkCheck() {
 	for (let a of document.querySelectorAll('a[href]')) {
 		try {
@@ -527,16 +529,17 @@ function removeExternalLinkCheck() {
 				let needle = "/home/leaving?allowTrusted=1&target=";
 				a.href = decodeURIComponent(a.href.substring(a.href.indexOf(needle) + needle.length))
 			}
-		}
-		catch (e) {
+		} catch (e) {
 			console.log(e);
 		}
 	}
 }
+
 function innerText(string) {
 	let element = document.createElement('div');
 	element.innerHTML = string;
 	element.querySelectorAll('div.js-embed').forEach(node => node.parentElement.removeChild(node))
+
 	function getTextLoop(element) {
 		const texts = [];
 		Array.from(element.childNodes).forEach(node => {
@@ -549,6 +552,7 @@ function innerText(string) {
 	}
 	return getTextLoop(element).join(' ');
 }
+
 function userMenus() {
 	for (let old of document.querySelectorAll('.userinfo-username-title')) {
 		let nu = old.cloneNode(true);
@@ -587,6 +591,7 @@ function userMenus() {
 		});
 	}
 }
+
 function userHistory(categoriesPromise) {
 	if (location.hash.indexOf('#bes:') == 0 && location.pathname == '/discussions') {
 		let remove = document.querySelectorAll('.forum-threadlist-table tbody tr, .forum-threadlist-table thead, .BoxNewDiscussion, .PageControls-filters, .HomepageTitle, #PagerBefore *, #PagerAfter *');
@@ -652,8 +657,7 @@ function userHistory(categoriesPromise) {
 		if (page == 1) {
 			prev.setAttribute("aria-disabled", true);
 			prev.classList.add("Highlight");
-		}
-		else {
+		} else {
 			prev.className = 'Previous';
 			prev.href = '/discussions#bes:' + encodeURIComponent(username) + ':' + (page - 1);
 		}
@@ -698,8 +702,7 @@ function userHistory(categoriesPromise) {
 									let text = document.createElement('p');
 									text.appendChild(document.createTextNode('[No posts found]'));
 									td.appendChild(text);
-								}
-								else {
+								} else {
 									let parentDiscussionList = [];
 									let commentList = [];
 									for (let p of posts) {
@@ -770,8 +773,7 @@ function userHistory(categoriesPromise) {
 												if (p.recordType == 'discussion') {
 													title.style.fontWeight = "bold";
 													td.insertBefore(meta, td.firstChild);
-												}
-												else {
+												} else {
 													meta.appendChild(document.createTextNode('in '));
 													td.appendChild(meta);
 												}
@@ -811,14 +813,14 @@ function userHistory(categoriesPromise) {
 								}
 							})
 							.catch(e => console.log(e));
-					}
-					else
+					} else
 						loadingCell.textContent = '[User not found]';
 				})
 				.catch(e => console.log(e));
 		});
 	}
 }
+
 function editableQuoting() {
 	for (let post of document.querySelectorAll('.ItemComment, .ItemDiscussion')) {
 		let q = post.querySelector('a.Quote');
@@ -848,6 +850,7 @@ function editableQuoting() {
 		post.querySelector('.Reactions').insertBefore(eq, q.nextElementSibling);
 	}
 }
+
 function addThreadPreviews() {
 	let links = document.querySelectorAll('a.threadbit-threadlink, .threadlink-wrapper a');
 	let discussions = [];
@@ -887,8 +890,7 @@ function addThreadPreviews() {
 							if (d.unread == false) {
 								l.style.fontWeight = "normal";
 							}
-						}
-						else {
+						} else {
 							parent = l.parentElement;
 							row = l.parentElement.parentElement;
 							preview.style.top = '46px';
@@ -925,27 +927,27 @@ function addThreadPreviews() {
 								}
 
 							}
-						}
-						catch (e) { console.log(e) }
+						} catch (e) { console.log(e) }
 					}
 				}
 			})
 			.catch(error => console.log(error));
 	}
 }
+
 function addThanksAfterPosts() {
 	for (let post of document.querySelectorAll('.ItemComment, .ItemDiscussion')) {
 		if (post.classList.contains('ItemDiscussion') && post.querySelector('.HasCount')) {
 			let path = new URL(post.querySelector(".post-count a").href).pathname.replace('/discussion/', '');
 			let id = path.slice(0, path.indexOf('/'));
 			appendThanks(post, 'discussions', id);
-		}
-		else if (post.querySelector('.HasCount')) {
+		} else if (post.querySelector('.HasCount')) {
 			let id = post.id.replace('Comment_', '');
 			appendThanks(post, 'comments', id);
 		}
 	}
 }
+
 function appendThanks(element, type, id) {
 	fetch(api + type + '/' + id + '/reactions?limit=100&type=Like')
 		.then(response => {
@@ -979,14 +981,26 @@ function appendThanks(element, type, id) {
 		})
 		.catch(error => console.log(error));
 }
+
 function highlightOP() {
 	if (gdn && gdn.meta.DiscussionID) {
-		let userid = gdn.meta.eventData.discussion.discussionUser.userID;
-		let posts = document.querySelectorAll("span[data-dropdown='user" + userid + "-menu']");
-		for (let p of posts)
-			p.parentElement.classList.add('original-poster-28064212');
+		fetch(api + 'discussions/' + gdn.meta.DiscussionID)
+			.then(response => {
+				if (response.ok)
+					return response.json();
+				else
+					throw new Error(response.statusText);
+			})
+			.then(data => {
+				let userid = data.insertUserID;
+				let posts = document.querySelectorAll("span[data-dropdown='user" + userid + "-menu']");
+				for (let p of posts)
+					p.parentElement.classList.add('original-poster-28064212');
+			})
+			.catch(error => console.log(error));
 	}
 }
+
 function addBookmarkStatusToComments() {
 	let commentElements = document.querySelectorAll('.Profile .Comments .Item:not(.bookmark-status-28064212)');
 	let commentList = [];
@@ -1047,6 +1061,7 @@ function addBookmarkStatusToComments() {
 			.catch(error => console.log(error));
 	}
 }
+
 function addCategoryListing(categoriesPromise) {
 	categoriesPromise.then(data => {
 		let catLink = document.querySelector("a[to='/categories']");
@@ -1171,6 +1186,7 @@ function addCategoryListing(categoriesPromise) {
 		}
 	});
 }
+
 function createAlert(msg) {
 	for (let a of document.querySelectorAll(".alert-28064212")) {
 		a.style.opacity = 0;
@@ -1191,6 +1207,7 @@ function createAlert(msg) {
 </div>`;
 	alertBox.appendChild(alert);
 }
+
 function isElementInViewport(el) {
 	let rect = el.getBoundingClientRect();
 	return (
@@ -1200,6 +1217,7 @@ function isElementInViewport(el) {
 		rect.right <= (window.innerWidth || document.documentElement.clientWidth)
 	);
 }
+
 function keyShortcuts(key) {
 	let code = key.keyCode;
 	let ctrl = key.ctrlKey;
@@ -1211,15 +1229,13 @@ function keyShortcuts(key) {
 		if (ctrl && code == 32 && document.querySelector('button[title=Search]')) {
 			// Ctrl + Space - searchbox
 			document.querySelector('button[title=Search]').click()
-		}
-		else if (code == 39) {
+		} else if (code == 39) {
 			// → - next page, last page with shift
 			if (shift && document.querySelector('.Pager a.LastPage'))
 				location.href = document.querySelector('.Pager a.LastPage');
 			else if (document.querySelector('.Pager a.Next') != null)
 				location.href = document.querySelector('.Pager a.Next');
-		}
-		else if (code == 37) {
+		} else if (code == 37) {
 			// ← - previous page, first page with shift, parent forum with ctrl
 			if (shift && document.querySelector('.Pager a.FirstPage'))
 				location.href = document.querySelector('.Pager a.FirstPage');
@@ -1231,11 +1247,9 @@ function keyShortcuts(key) {
 					else if (items.length > 1)
 						location.href = items[items.length - 2];
 				}
-			}
-			else if (document.querySelector('.Pager a.Previous'))
+			} else if (document.querySelector('.Pager a.Previous'))
 				location.href = document.querySelector('.Pager a.Previous');
-		}
-		else if (code == 65 || code == 90) {
+		} else if (code == 65 || code == 90) {
 			// a/z - navigate forums/threads
 			let list = document.querySelectorAll('.forum-threadlist-table tbody tr, .module-wrapper tbody tr, .ItemComment, .ItemDiscussion, .Profile .DataList .Item');
 			if (list.length > 0) {
@@ -1258,8 +1272,7 @@ function keyShortcuts(key) {
 						}
 						if (index == -1)
 							index = list.length - 1;
-					}
-					else if (code == 90) {
+					} else if (code == 90) {
 						for (let j = 0; j < list.length && index == -1; j++) {
 							if (isElementInViewport(list[j]))
 								index = j;
@@ -1267,11 +1280,9 @@ function keyShortcuts(key) {
 						if (index == -1)
 							index = 0;
 					}
-				}
-				else if (code == 65 && index > 0) {
+				} else if (code == 65 && index > 0) {
 					index--;
-				}
-				else if (code == 90 && index < list.length - 1) {
+				} else if (code == 90 && index < list.length - 1) {
 					index++;
 				}
 				hl = list[index];
@@ -1281,14 +1292,12 @@ function keyShortcuts(key) {
 				if (!isElementInViewport(hl))
 					hl.scrollIntoView(code == 90);
 			}
-		}
-		else if (!ctrl && code == 67) {
+		} else if (!ctrl && code == 67) {
 			// c - display category menu
 			window.scrollTo(0, 0);
 			document.querySelector("a[to='/categories']").parentElement.dispatchEvent(new Event('mouseover'));
 			document.querySelector("#categories-28064212").focus();
-		}
-		else if (!ctrl && code == 70) {
+		} else if (!ctrl && code == 70) {
 			// f - follow/unfollow
 			if (document.querySelector('a.Bookmark') && location.pathname.startsWith('/discussion/')) {
 				if (document.querySelector('a.Bookmarked'))
@@ -1296,8 +1305,7 @@ function keyShortcuts(key) {
 				else
 					createAlert("Discussion bookmarked");
 				document.querySelector('a.Bookmark').click();
-			}
-			else if (location.pathname.startsWith('/categories/') && document.querySelector('meta[name=catid]')) {
+			} else if (location.pathname.startsWith('/categories/') && document.querySelector('meta[name=catid]')) {
 				let category = document.querySelector('meta[name=catid]').content;
 				let user = gdn.meta.ui.currentUser.userID;
 				fetch(api + "categories/" + category + "/preferences/" + user)
@@ -1310,27 +1318,26 @@ function keyShortcuts(key) {
 					.then(data => {
 						let toggle = data.postNotifications ? null : "follow";
 						fetch(api + "categories/" + category + "/preferences/" + user, {
-							method: "PATCH", body: JSON.stringify({ postNotifications: toggle }), headers: { "Content-type": "application/json; charset=UTF-8" }
+							method: "PATCH",
+							body: JSON.stringify({ postNotifications: toggle }),
+							headers: { "Content-type": "application/json; charset=UTF-8" }
 						})
 							.then(response => {
 								if (response.ok) {
 									//alert
 									createAlert(toggle == "follow" ? "Forum followed" : "Forum unfollowed");
 									return response.json();
-								}
-								else
+								} else
 									throw new Error(response.statusText);
 							})
 							.catch(e => console.log(e));
 					})
 					.catch(e => console.log(e));
 			}
-		}
-		else if (!ctrl && code == 76 && document.querySelector('#latest')) {
+		} else if (!ctrl && code == 76 && document.querySelector('#latest')) {
 			// l - scroll to latest
 			document.querySelector('#latest').scrollIntoView();
-		}
-		else if (!ctrl && code == 77) {
+		} else if (!ctrl && code == 77) {
 			// m - Mark forum read
 			if (location.pathname.startsWith('/categories/') && document.querySelector('meta[name=catid]')) {
 				let category = document.querySelector('meta[name=catid]').content;
@@ -1342,77 +1349,63 @@ function keyShortcuts(key) {
 							u.classList.remove("unread")
 					});
 			}
-		}
-		else if (!ctrl && code == 79) {
+		} else if (!ctrl && code == 79) {
 			// o - open all unread threads
 			let threads = document.querySelectorAll('.forum-threadlist-thread');
 			for (let t of threads) {
 				if (t.querySelector('.HasNew'))
 					window.open(t.querySelector('a.threadbit-threadlink'));
 			}
-		}
-		else if (!ctrl && code == 80 && hl && hl.getElementsByClassName('customspamlink').length > 0) {
+		} else if (!ctrl && code == 80 && hl && hl.getElementsByClassName('customspamlink').length > 0) {
 			// p - Report spammer (if https://github.com/28064212/greasemonkey-scripts/raw/master/Boards.ie%20-%20Quick%20Spam%20Reporting.user.js also installed)
 			window.open(hl.getElementsByClassName('customspamlink')[0]);
-		}
-		else if (code == 81 && hl) {
+		} else if (code == 81 && hl) {
 			// q - open thread/forum or quote highlighted post
 			if (ctrl && hl.querySelector('.MiniPager') && hl.querySelector('.MiniPager').querySelector('a:first-of-type')) {
 				// first page
 				window.open(hl.querySelector('.MiniPager').querySelector('a:first-of-type'));
-			}
-			else if (alt && hl.querySelector('.MiniPager') && hl.querySelector('.MiniPager').querySelector('a:last-of-type')) {
+			} else if (alt && hl.querySelector('.MiniPager') && hl.querySelector('.MiniPager').querySelector('a:last-of-type')) {
 				// last page
 				window.open(hl.querySelector('.MiniPager').querySelector('a:last-of-type'));
-			}
-			else if (hl.querySelector('.oplink-wrapper a, a.threadbit-threadlink')) {
+			} else if (hl.querySelector('.oplink-wrapper a, a.threadbit-threadlink')) {
 				// last unread post
 				window.open(hl.querySelector('.oplink-wrapper a, a.threadbit-threadlink'));
-			}
-			else if (hl.querySelector('a.Quote')) {
+			} else if (hl.querySelector('a.Quote')) {
 				// quote highlighted post
 				hl.querySelector('a.Quote').click();
 				key.preventDefault();
 			}
-		}
-		else if (!ctrl && code == 82) {
+		} else if (!ctrl && code == 82) {
 			// r - reply to thread/post new thread
 			if (document.querySelector('.richEditor-text')) {
 				key.preventDefault();
 				document.querySelector('.richEditor-text').focus();
 				document.querySelector('.richEditor-text').scrollIntoView();
-			}
-			else if (document.querySelector(".BoxNewDiscussion a"))
+			} else if (document.querySelector(".BoxNewDiscussion a"))
 				document.querySelector(".BoxNewDiscussion a").click();
-		}
-		else if (!ctrl && code == 83) {
+		} else if (!ctrl && code == 83) {
 			// s - show/hide settings
 			settingsModal();
-		}
-		else if (!ctrl && code == 84 && hl && hl.querySelector('.ReactButton-Like')) {
+		} else if (!ctrl && code == 84 && hl && hl.querySelector('.ReactButton-Like')) {
 			// t - toggle thanks of highlighted post
 			hl.querySelector('.ReactButton-Like').click();
-		}
-		else if (!ctrl && code == 88) {
+		} else if (!ctrl && code == 88) {
 			// x - toggle previews display
 			showpreviews = !showpreviews;
 			if (hl.querySelector(".preview-28064212"))
 				hl.querySelector(".preview-28064212").style.display = showpreviews ? "block" : "none";
-		}
-		else if (!ctrl && hl && code >= 48 && code <= 57) {
+		} else if (!ctrl && hl && code >= 48 && code <= 57) {
 			// 0-9: open links
 			code = code == 48 ? 10 : code - 49;
 			if (hl.querySelectorAll('.postbit-postbody a:not(.ReactButton)').length > 0 && hl.querySelectorAll('.postbit-postbody a:not(.ReactButton)')[code])
 				window.open(hl.querySelectorAll('.postbit-postbody a:not(.ReactButton)')[code]);
-		}
-		else if (!ctrl && code == 27) {
+		} else if (!ctrl && code == 27) {
 			// esc - close settings/documentation
 			if (document.querySelector('#settings-28064212'))
 				document.querySelector('#settings-28064212').style.display = "none";
 			if (document.querySelector('#docs-28064212'))
 				document.querySelector('#docs-28064212').style.display = "none";
-		}
-		else if (shift && code == 191) {
+		} else if (shift && code == 191) {
 			// ? - show/hide documentation
 			docsModal();
 		}
