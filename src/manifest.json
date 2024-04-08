@@ -1,7 +1,7 @@
 {
 	"manifest_version": 3,
 	"name": "Boardsie Enhancement Suite",
-	"version": "0.2.24",
+	"version": "0.2.25",
 	"description": "Enhancements for Boards.ie",
 	"author": "28064212",
 	"homepage_url": "https://github.com/28064212/boardsie-enhancement-suite",
@@ -9,8 +9,7 @@
 	"key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwHjdB1VJYQdV71B53bgEj1CcasycPRgipW0LtfSGuRiFEraYMZ1BAWilT4jJQ5mGn8yCHtBkuyCxmIJs0mtC8GHr2jgMvc2IVZNYPj1rBYtg3emWv77yGSfEgnHoqApn/dPDYY9V9XcDJ9fwMofKKeHxCxbBA2y1IPwF6/EAnZNf/F29U7SygKf0O16Ep0pXWgFhV0DUDddjOTW1cYX8/nGY3jv9dG+IKQp+jlWBBRsIBp2n+q0BELtEZHg3ytW5q4I7uS0x1OHeKVwrg0R3PzOwD19TaYCGJluTOYv+kkIRLRJmI6iHpfHBNeRnBVESrNe/Ix2ZFecXmI5+nkMHYwIDAQAB",
 	"browser_specific_settings": {
 		"gecko": {
-			"id": "28064212@boardsie",
-			"update_url": "https://raw.githubusercontent.com/28064212/boardsie-enhancement-suite/master/updates/updates.json"
+			"id": "28064212@boardsie"
 		}
 	},
 	"icons": {
