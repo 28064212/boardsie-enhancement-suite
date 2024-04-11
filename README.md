@@ -1,12 +1,9 @@
 # Boardsie Enhancement Suite
 Boardsie Enhancement Suite is an *unofficial* package of modifications designed to improve the desktop browsing experience on [Boards.ie](https://www.boards.ie).
 
-* [Features](#features)
-* [Installation](#installation)
-* [Updates](#updates)
-* [Usage](#usage)
-* [Disclaimers](#disclaimers)
-* [Acknowledgements](#acknowledgements)
+You can find the extension on your browser's extension store:
+* Firefox: https://addons.mozilla.org/addon/boardsie-enhancement-suite/
+* Chrome, Edge, and other Chromium-based browsers: https://chromewebstore.google.com/detail/boardsie-enhancement-suit/bbgnmnfagihoohjkofdnofcfmkpdmmce
 
 # Features
 ## Keyboard shortcuts
@@ -27,7 +24,16 @@ e.g. →/← for next/previous page, a/z to navigate posts, r to reply, q to quo
 ## Category drop-down menu
 ![Category menu](images/screenshot-category-menu.png)
 
-# Installation
+# Usage
+The majority of features are applied just by installing the extension. Some less obvious features are explained here.
+
+Keyboard shortcuts: the extension allows you to use the site almost entirely using your keyboard. To view the full list of keyboard shortcuts available, press '?' (Shift+/) after installation, or click the keyboard icon in the menu bar (top right).
+
+Dark mode (and other configurable settings): dark mode is disabled by default. To turn it on, press 's' or click the settings icon in the menu bar (top-right) to bring up the settings menu.
+
+# Installation (Manual)
+The recommended method of installation is through the Firefox Addons website or, for Chromium-based browsers like Chrome, Edge and Opera, the Chrome Web Store. Links to these are above. However, if you want to do a manual install, you can use the steps below.
+
 ## Firefox
 1. Click the [latest .xpi release](https://github.com/28064212/boardsie-enhancement-suite/releases/latest/download/boardsie-enhancement-suite.xpi), and confirm the install. Alternatively, you can download the .xpi file, and install using the following steps
 1. In Firefox, open your "Add-ons and Themes" page (Ctrl+Shift+A, or go to the URL about:addons)
@@ -48,21 +54,14 @@ e.g. →/← for next/previous page, a/z to navigate posts, r to reply, q to quo
 
 # Updates
 ## Firefox
-The extension will update as per your browser's extension settings (automatically, in most cases)
+The extension will update as per your browser's extension settings (automatically, in most cases). Note that this may update you to the Addons website version - if you don't want that, you can turn off automatic updates for this extension.
 
 ## Chrome, Edge
-Unfortunately, these browsers do not allow automatic updates of non-store extensions. To update to a new release:
+These browsers do not allow automatic updates of non-store extensions. To update to a new release:
 1. Download the [latest .zip release](https://github.com/28064212/boardsie-enhancement-suite/releases/latest/download/boardsie-enhancement-suite.zip)
 1. Unzip the contents to the same folder that the extension is currently installed in, overwriting any existing files
 1. In your browser, open the Extensions page
 1. In the Boardsie Enhancement Suite section, click the Reload button
-
-# Usage
-The majority of features are applied just by installing the extension. Some less obvious features are explained here.
-
-Keyboard shortcuts: the extension allows you to use the site almost entirely using your keyboard. To view the full list of keyboard shortcuts available, press '?' (Shift+/) after installation, or click the keyboard icon in the menu bar (top right).
-
-Dark mode (and other configurable settings): dark mode is disabled by default. To turn it on, press 's' or click the settings icon in the menu bar (top-right) to bring up the settings menu.
 
 # Disclaimers
 This is a completely unofficial addon to the Boards site. The developer has no connection to Boards other than as a user, and Boards have not sanctioned it in any way.
