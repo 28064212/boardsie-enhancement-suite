@@ -1292,6 +1292,7 @@ function addCategoryListing(categoriesPromise) {
 			else
 				return b.name.toLowerCase().localeCompare(a.name.toLowerCase());
 		});
+		categoriesHeader.style.gridTemplateColumns = "1fr ".repeat(links.length).trim(); // some users have more top-level categories available
 		for (let l of links) {
 			let header = document.createElement("a");
 			header.dataset.id = l.id;
