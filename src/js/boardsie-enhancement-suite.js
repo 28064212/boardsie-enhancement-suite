@@ -3,7 +3,7 @@ let showpreviews = false;
 let settings = {};
 let userDetails;
 let api = "https://www.boards.ie/api/v2/";
-const version = '0.3.1';
+const version = '0.3.2';
 
 if (window.top == window.self) {
 	try {
@@ -102,6 +102,7 @@ if (window.top == window.self) {
 
 	unboldReadDiscussions();
 	highlightOP();
+	restoreOPAvatar();
 	removeExternalLinkCheck();
 	addThanksAfterPosts();
 	addDiscussionPreviews();
@@ -114,6 +115,7 @@ if (window.top == window.self) {
 		}
 	}
 	userMenus();
+	addMarkReadButton();
 	//editableQuoting();
 	userHistory(categoriesPromise);
 	window.addEventListener('hashchange', function () {
@@ -126,21 +128,6 @@ if (window.top == window.self) {
 	if (profileComments) {
 		let observer = new MutationObserver(addBookmarkStatusToComments);
 		observer.observe(profileComments, { childList: true, subtree: false });
-	}
-
-	if (location.pathname.startsWith('/categories/') && document.querySelector('meta[name=catid]')) {
-		let markread = document.createElement('span');
-		markread.appendChild(document.createTextNode('Mark Read ✓'));
-		markread.style.marginRight = '10px';
-		markread.style.padding = '5px';
-		markread.style.borderRadius = '5px';
-		markread.style.opacity = '1';
-		markread.style.setProperty('cursor', 'pointer', 'important');
-
-		let pager = document.querySelector('#PagerBefore');
-		pager.insertBefore(markread, pager.firstElementChild);
-
-		markread.addEventListener('click', markCategoryRead);
 	}
 
 	userDetails = fetch(api + "users/me")
@@ -482,6 +469,23 @@ function docsModal() {
 	</div>`;
 	}
 	docsModal.style.display = docsModal.style.display == 'none' ? 'block' : 'none';
+}
+
+function addMarkReadButton() {
+	if (location.pathname.startsWith('/categories/') && document.querySelector('meta[name=catid]')) {
+		let markread = document.createElement('span');
+		markread.appendChild(document.createTextNode('Mark Read ✓'));
+		markread.style.marginRight = '10px';
+		markread.style.padding = '5px';
+		markread.style.borderRadius = '5px';
+		markread.style.opacity = '1';
+		markread.style.setProperty('cursor', 'pointer', 'important');
+
+		let pager = document.querySelector('#PagerBefore');
+		pager.insertBefore(markread, pager.firstElementChild);
+
+		markread.addEventListener('click', markCategoryRead);
+	}
 }
 
 function markCategoriesRead(categoriesPromise) {
@@ -1171,6 +1175,39 @@ function highlightOP() {
 				let posts = document.querySelectorAll("span[data-dropdown='user" + userid + "-menu']");
 				for (let p of posts)
 					p.parentElement.classList.add('original-poster-28064212');
+			})
+			.catch(error => console.log(error));
+	}
+}
+
+function restoreOPAvatar() {
+	if (location.pathname.startsWith("/discussion/") && document.querySelector('.Comment') && document.querySelector('.Comment').querySelector('.ProfilePhotoLarge') == null) {
+		let userid = document.querySelector('.user-tools').id.replace("user", "").replace("-menu", "");
+		fetch(api + 'users/' + userid)
+			.then(response => {
+				if (response.ok)
+					return response.json();
+				else
+					throw new Error(response.statusText);
+			})
+			.then(data => {
+				let link = document.createElement("a");
+				link.title = data.name;
+				link.href = data.url;
+				link.classList.add("ProfilePhotoLarge", "PhotoWrap", "js-userCard", "js-userCardInitialized");
+				link.ariaLabel = "User: " + data.name;
+				link.dataset.userid = data.userID;
+				link.setAttribute("aria-controls", "popupTrigger-16-content");
+
+				let img = document.createElement("img");
+				img.src = data.photoUrl;
+				img.alt = data.name;
+				img.dataset.fallback = "avatar";
+				img.loading = "lazy";
+				img.classList.add("ProfilePhoto", "ProfilePhotoMedium");
+
+				link.appendChild(img);
+				document.querySelector(".userinfo-username").appendChild(link);
 			})
 			.catch(error => console.log(error));
 	}

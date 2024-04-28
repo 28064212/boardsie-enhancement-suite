@@ -50,7 +50,7 @@ a[to='/categories']::after {
 	text-decoration: none !important;
 }
 
-/* threads */
+/* discussions */
 
 .Comment .postbit-message, .Message.userContent {
 	padding: 0px !important;
@@ -148,6 +148,9 @@ a[to='/categories']::after {
 	width: 100% !important;
 	clear: none !important;
 }
+.Comment .embedImage-img {
+	width: auto !important;
+}
 [class$="collapsableContent-heightContainer"] {
 	height: auto !important;
 }
@@ -220,7 +223,7 @@ a[to='/categories']::after {
 	margin: 0 !important;
 }
 
-/* forums */
+/* categories */
 
 .Content .forum-threadlist-thread-lastpost {
 	float: left !important;
@@ -424,7 +427,7 @@ body {
 	margin-bottom: 10px;
 }
 
-/* categories */
+/* categories dropdown */
 
 #categories-28064212 {
 	position: fixed;

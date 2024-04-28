@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
 	<app appid='bbgnmnfagihoohjkofdnofcfmkpdmmce'>
-		<updatecheck codebase='https://github.com/28064212/boardsie-enhancement-suite/releases/download/v0.3.1/boardsie-enhancement-suite.crx' version='0.3.1' />
+		<updatecheck codebase='https://github.com/28064212/boardsie-enhancement-suite/releases/download/v0.3.2/boardsie-enhancement-suite.crx' version='0.3.2' />
 	</app>
 </gupdate>
