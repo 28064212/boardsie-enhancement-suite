@@ -117,6 +117,7 @@ if (window.top == window.self) {
 	userMenus();
 	addMarkReadButton();
 	//editableQuoting();
+	modsInfo(categoriesPromise);
 	userHistory(categoriesPromise);
 	window.addEventListener('hashchange', function () {
 		userHistory(categoriesPromise);
@@ -658,6 +659,70 @@ function userMenus() {
 		});
 		menu.addEventListener("mouseleave", function (e) {
 			menu.style.display = 'none';
+		});
+	}
+}
+
+function modsInfo(categoriesPromise) {
+	if (location.pathname.startsWith("/categories/")) {
+		categoriesPromise.then(categories => {
+			fetch(api + 'discussions/?discussionID=2058234282')
+				.then(response => {
+					if (response.ok)
+						return response.json();
+					else
+						throw new Error(response.statusText);
+				})
+				.then(data => {
+					let catMods = {};
+					const parser = new DOMParser();
+					const cmodPost = parser.parseFromString(data[0].body, 'text/html');
+					const catParagraphs = cmodPost.querySelectorAll('p:not(:has(*))');
+					for (let p of catParagraphs) {
+						let cat = p.textContent == "Region" ? "Regional" : p.textContent;
+						cat = cat.replace(" and ", " & ").toLowerCase();
+						let cmodLinks = p.nextElementSibling.querySelectorAll('a');
+						let mods = [];
+						for (let c of cmodLinks) {
+							mods.push(c.dataset.username);
+						}
+						catMods[cat] = mods.sort();
+					}
+					//let mods = document.querySelectorAll('.postbit-postbody a["data-userid"]');
+					let breadcrumbs = document.querySelector(".Breadcrumbs").textContent.split("› ");
+					let cat = "";
+					if (breadcrumbs[1].toLowerCase() == "regional")
+						cat = "regional";
+					else if (breadcrumbs[1].toLowerCase() == "topics")
+						cat = breadcrumbs[2].toLowerCase();
+					if (cat !== "") {
+						let container = document.createElement("div");
+						container.classList.add("mod-info-28064212");
+						// let modP = document.createElement("p");
+						// container.appendChild(modP);
+						// modP.textContent = "Moderators: ";
+						let cmodP = document.createElement("p");
+						container.appendChild(cmodP);
+						cmodP.textContent = "Category Moderators: ";
+						if (catMods[cat].length == 0) {
+							cmodP.appendChild(document.createTextNode('N/A'));
+						}
+						else {
+							for (let c of catMods[cat]) {
+								let link = document.createElement("a");
+								link.href = "/profile/" + c;
+								link.textContent = c;
+								cmodP.appendChild(link);
+								cmodP.appendChild(document.createTextNode(' | '));
+							}
+							cmodP.removeChild(cmodP.lastChild);
+						}
+						document.querySelector("section.Content.MainContent").appendChild(container);
+					}
+				})
+				.catch(e => {
+					console.log(e);
+				});
 		});
 	}
 }

@@ -255,6 +255,14 @@ a[to='/categories']::after {
 [class*="categoryFollowDropDown"] * {
 	float: unset;
 }
+.mod-info-28064212 {
+	float: right;
+	margin-top: 5px;
+	padding: 10px;
+}
+.mod-info-28064212 p {
+	font-weight: bold;
+}
 
 /* homepage */
 
@@ -703,7 +711,7 @@ body .Reactions span, body .Reactions a {
 body[data-theme='dark'] .module-wrapper tbody .threadrow-container-zebra td,
 body[data-theme='dark'] .module-wrapper th,
 body[data-theme='dark'] .Breadcrumbs, body[data-theme='dark'] .BreadcrumbsBox, body[data-theme='dark'] header .Frame-row,
-body[data-theme='dark'] .forum-threadlist-table th, 
+body[data-theme='dark'] .forum-threadlist-table th,
 body[data-theme='dark'] .Pager span, body[data-theme='dark'] .Pager .Highlight,
 body[data-theme='dark'] .DraftButton {
 	background-color: var(--bg-quotes) !important;
