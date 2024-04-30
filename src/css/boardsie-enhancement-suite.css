@@ -16,6 +16,12 @@
 	flex-grow: 1 !important;
 	max-width: 100% !important;
 }
+.Frame-content {
+	margin-bottom: 0 !important;
+}
+.top-ad > div {
+	min-height: auto !important;
+}
 .Panel-main {
 	margin-top: 0 !important;
 	top: 0 !important;
@@ -44,7 +50,7 @@
 	left: auto !important;
 	right: 0 !important;
 }
-a[to='/categories']::after {
+a[href='/categories']::after, a[href='https://www.boards.ie/categories']::after {
 	content: "🠗" !important;
 	padding-left: 5px !important;
 	text-decoration: none !important;
@@ -248,6 +254,13 @@ a[to='/categories']::after {
 }
 .Category {
 	float: right !important;
+}
+h1.H.HomepageTitle {
+	visibility: unset !important;
+	display: revert !important;
+}
+#flyout-3-handle::after {
+	content: "" !important;
 }
 [class*="categoryFollowDropDown"] {
 	float: right
