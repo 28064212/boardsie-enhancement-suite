@@ -269,6 +269,10 @@ h1.H.HomepageTitle {
 	visibility: unset !important;
 	display: revert !important;
 }
+#flyout-3-handle {
+	padding-top: 0px !important;
+	padding-bottom: 0px !important;
+}
 #flyout-3-handle::after {
 	content: "" !important;
 }
@@ -640,20 +644,25 @@ body {
 
 /* user history */
 
-table.userhistory-28064212 {
+table.userhistory-28064212.forum-threadlist-table {
 	table-layout: auto !important;
 }
-table.userhistory-28064212 th {
+table.userhistory-28064212.forum-threadlist-table tr th {
 	padding: 10px !important;
 	white-space: nowrap !important;
 	text-align: left !important;
-}
-table.userhistory-28064212 td:first-child, table.userhistory-28064212 th:first-child {
 	width: auto !important;
 }
-table.userhistory-28064212 td {
+table.userhistory-28064212.forum-threadlist-table tr td:first-child, table.userhistory-28064212.forum-threadlist-table tr th:first-child {
+	width: auto !important;
+}
+table.userhistory-28064212.forum-threadlist-table tr td {
 	padding: 10px !important;
 	vertical-align: top !important;
+	width: auto !important;
+}
+.userhistory-28064212 td:nth-child(3) {
+	white-space: nowrap;
 }
 .userhistory-28064212 td:last-child {
 	text-align: center !important;
