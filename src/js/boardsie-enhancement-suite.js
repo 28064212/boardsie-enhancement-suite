@@ -632,6 +632,10 @@ function userMenus() {
 		old.parentElement.replaceChild(nu, old);
 		let username = nu.textContent;
 
+		let indicator = document.createElement('span');
+		indicator.classList.add('usermenu-indicator-28064212');
+		nu.insertBefore(indicator, nu.firstChild);
+
 		let menu = document.createElement('div');
 		menu.classList.add('usermenu-28064212');
 		menu.style.display = 'none';

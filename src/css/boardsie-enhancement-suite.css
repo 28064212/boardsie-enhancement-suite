@@ -19,7 +19,7 @@
 .Frame-content {
 	margin-bottom: 0 !important;
 }
-.top-ad > div {
+.top-ad>div {
 	min-height: auto !important;
 }
 .Panel-main {
@@ -97,6 +97,9 @@ a[href='/categories']::after, a[href='https://www.boards.ie/categories']::after 
 .userinfo-username {
 	float: left !important;
 }
+.userinfo-username span.offline {
+	display: none !important;
+}
 .usertitle-28064212 {
 	font-size: 13px;
 	font-weight: bold;
@@ -124,6 +127,13 @@ a[href='/categories']::after, a[href='https://www.boards.ie/categories']::after 
 }
 .usermenu-28064212 a:not(:last-of-type) {
 	border-bottom: 1px solid rgb(59, 85, 134);
+}
+.usermenu-indicator-28064212 {
+	display: inline-block;
+	width: 13px;
+	height: 11px;
+	margin-right: 5px;
+	background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAALCAYAAACksgdhAAABhWlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9TpSJVEYuIOGSo4mBBVMRRq1CECqFWaNXB5NIvaNKQpLg4Cq4FBz8Wqw4uzro6uAqC4AeIo5OToouU+L+00CLGg+N+vLv3uHsHCNUi06y2cUDTbTMRi4qp9KoYeIUf/ejFKLplZhlzkhSH5/i6h4+vdxGe5X3uz9GlZiwG+ETiWWaYNvEG8fSmbXDeJw6xvKwSnxOPmXRB4keuK3V+45xzWeCZITOZmCcOEYu5FlZamOVNjXiKOKxqOuULqTqrnLc4a8Uya9yTvzCY0VeWuU5zCDEsYgkSRCgoo4AibERo1UmxkKD9qId/0PVL5FLIVQAjxwJK0CC7fvA/+N2tlZ2cqCcFo0D7i+N8DAOBXaBWcZzvY8epnQD+Z+BKb/pLVWDmk/RKUwsfAT3bwMV1U1P2gMsdYODJkE3Zlfw0hWwWeD+jb0oDfbdA51q9t8Y+Th+AJHUVvwEODoGRHGWve7y7o7W3f880+vsBXz1yn6RZIH8AAAAGYktHRAAAAAAAAPlDu38AAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfmAxYRLSbR2Db5AAAAGXRFWHRDb21tZW50AENyZWF0ZWQgd2l0aCBHSU1QV4EOFwAAAOtJREFUKM+Vkj1Lw1AUhh8Pp4FrlUAhxa1LcdO9FBdnxw7FqUv7o5Tu2tnZzfwB12bo2ovRgiFaL0cnpTFK9d1eDs/53smy7L0sS8yMbRIRnHNoWZYkSYKqboVCCHjvUTNDVYmiiL/IzJBqJuPhqSAE+9F/tblp8lXBdJYyXyx5eX1jvlgynaXkq6IC1QbJH5+5vLrj7PSIm9t7Gir1hWyaVtxkNOgBcHGdAjAa9GjFzd8hVaHbaTMe9jk+PGA87NPttNFv1WrtfYKT8xPiPVcDAFRECCHUAvu7DcwC63X1TiKCOufw3v/rIz4Ar6Zd6ZWOk80AAAAASUVORK5CYII=");
 }
 .postbit-wrapper {
 	/* displays usermenu in front of following post */
