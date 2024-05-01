@@ -943,7 +943,7 @@ function userHistory(categoriesPromise) {
 													let postedCell = document.createElement('td');
 													postedCell.classList.add('postbit-postbody');
 													let timestamp = document.createElement('a');
-													timestamp.href = p.url;
+													timestamp.href = p.url.split(/[?]/)[0]; // search api returning urls with querystring that broke anchor tag
 													let t = new Date(p.dateInserted);
 													let tFormatted = (t.getFullYear().toString() + "-" + ("0" + (t.getMonth() + 1)).slice(-2) + "-" + ("0" + t.getDate()).slice(-2) + " " + ("0" + t.getHours()).slice(-2) + ":" + ("0" + t.getMinutes()).slice(-2));
 													timestamp.appendChild(document.createTextNode(tFormatted));
