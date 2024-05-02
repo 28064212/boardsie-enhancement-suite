@@ -26,6 +26,8 @@ if (window.top == window.self) {
 			settings.darkmode = false;
 		if (settings.stickyheader === undefined)
 			settings.stickyheader = false;
+		if (settings.bookmarkbadge === undefined)
+			settings.bookmarkbadge = true;
 
 		if (settings.keyboard)
 			window.addEventListener('keydown', keyShortcuts, true);
@@ -209,6 +211,10 @@ function menuItems() {
 	a.id = 'bookmarks-icon-28064212';
 	a.tabIndex = "0";
 	meBox.insertBefore(a, meBox.lastElementChild);
+	let badge = document.createElement("div");
+	badge.classList.add("notification-badge-28064212");
+	a.appendChild(badge);
+	checkBookmarks();
 
 	let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 	svg.setAttribute("viewBox", "0 0 12.733 16.394");
@@ -223,6 +229,25 @@ function menuItems() {
 	sep = document.createElement('div');
 	sep.classList.add('menu-separator-28064212');
 	meBox.insertBefore(sep, meBox.lastElementChild);
+}
+
+function checkBookmarks() {
+	fetch(api + 'discussions/bookmarked')
+		.then(response => {
+			if (response.ok)
+				return response.json();
+			else
+				throw new Error(response.statusText);
+		})
+		.then(data => {
+			let bookmarked = data.filter(b => b.unread);
+			if (bookmarked.length > 0 && settings.bookmarkbadge)
+				document.querySelector(".notification-badge-28064212").style.display = "block";
+			else
+				document.querySelector(".notification-badge-28064212").style.display = "none";
+		})
+		.catch(e => console.log(e));
+	setTimeout(checkBookmarks, 60000);
 }
 
 function settingsModal() {
@@ -266,6 +291,7 @@ function settingsModal() {
 		behaviours.innerHTML += '<p><input type="checkbox" id="settings-darkmode-28064212" /><label for="settings-darkmode-28064212">Dark Mode</label></p>';
 		behaviours.innerHTML += '<p><input type="checkbox" id="settings-stickyheader-28064212" /><label for="settings-stickyheader-28064212">Sticky Header</label></p>';
 		behaviours.innerHTML += '<p><input type="checkbox" id="settings-autobookmark-28064212" /><label for="settings-autobookmark-28064212">Automatically set "Bookmark this discussion"</label></p>';
+		behaviours.innerHTML += '<p><input type="checkbox" id="settings-bookmarkbadge-28064212" /><label for="settings-bookmarkbadge-28064212">Display badge for unread bookmarks</label></p>';
 		behaviours.innerHTML += '<p><input type="checkbox" id="settings-keyboard-28064212" /><label for="settings-keyboard-28064212">Keyboard shortcuts</label></p>';
 
 		let keyboard = behaviours.querySelector('#settings-keyboard-28064212');
@@ -307,6 +333,15 @@ function settingsModal() {
 			settings.autobookmark = autoBookmark.checked;
 			if (document.querySelector('#Form_Bookmarked') && settings.autobookmark == false)
 				document.querySelector('#Form_Bookmarked').checked = false;
+			await browser.storage.sync.set({ "settings": settings });
+		});
+
+		let bookmarkBadge = behaviours.querySelector('#settings-bookmarkbadge-28064212');
+		bookmarkBadge.checked = settings.bookmarkbadge;
+		bookmarkBadge.addEventListener('change', async function (e) {
+			settings.bookmarkbadge = bookmarkBadge.checked;
+			if(!settings.bookmarkbadge)
+				document.querySelector(".notification-badge-28064212").style.display = "none";
 			await browser.storage.sync.set({ "settings": settings });
 		});
 

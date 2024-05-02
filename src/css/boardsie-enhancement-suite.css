@@ -634,6 +634,16 @@ body {
 .settings-values-28064212 label {
 	padding-left: 10px;
 }
+.notification-badge-28064212 {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 10px;
+	height: 10px;
+	background-color: red;
+	border-radius: 5px;
+	display: none;
+}
 
 /* alerts */
 
