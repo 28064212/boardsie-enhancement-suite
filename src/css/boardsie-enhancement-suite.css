@@ -689,10 +689,10 @@ table.userhistory-28064212.forum-threadlist-table tr td {
 
 /* sticky header */
 
-body[data-stickyheader] #titleBar {
+body[data-stickyheader] #titleBar .titleBar {
 	position: sticky !important;
 }
-body:not([data-stickyheader]) #titleBar {
+body:not([data-stickyheader]) #titleBar .titleBar {
 	position: static !important;
 }
 body[data-stickyheader] #latest {
@@ -703,19 +703,35 @@ body:not([data-stickyheader]) #latest {
 	top: 0 !important;
 	scroll-margin-top: unset !important;
 }
-#titleBar, .BreadcrumbsBox {
+body[data-stickybreadcrumbs] .breadcrumb-container {
+	position: sticky !important;
+	top: 48px !important;
+}
+body[data-stickybreadcrumbs]:not([data-stickyheader]) .breadcrumb-container {
+	top: 0px !important;
+}
+body[data-stickybreadcrumbs][data-stickyheader] .breadcrumb-container {
+	top: 48px !important;
+}
+body:not([data-stickybreadcrumbs]) .breadcrumb-container {
+	position: static !important;
+	top: unset !important;
+}
+#titleBar {
 	top: 0 !important;
 }
+.breadcrumb-container {
+	padding: 0 !important;
+	background-color: #d6d5d3 !important;
+	z-index: 10000 !important;
+}
 .BreadcrumbsBox {
-	position: relative !important;
-	background-color: none !important;
-	z-index: 2 !important;
+	background-color: transparent !important;
+	margin-left: 0px !important;
 }
 .Breadcrumbs {
 	border-bottom: none !important;
-}
-#titleBar .Frame-row {
-	padding: 0 !important;
+	background-color: transparent !important;
 }
 .top-ad, .Frame-content {
 	margin-top: 0px !important;

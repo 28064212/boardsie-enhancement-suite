@@ -26,6 +26,8 @@ if (window.top == window.self) {
 			settings.darkmode = false;
 		if (settings.stickyheader === undefined)
 			settings.stickyheader = false;
+		if (settings.stickybreadcrumbs === undefined)
+			settings.stickybreadcrumbs = false;
 		if (settings.bookmarkbadge === undefined)
 			settings.bookmarkbadge = true;
 
@@ -35,6 +37,8 @@ if (window.top == window.self) {
 			document.body.dataset.theme = 'dark';
 		if (settings.stickyheader)
 			document.body.dataset.stickyheader = '';
+		if (settings.stickybreadcrumbs)
+			document.body.dataset.stickybreadcrumbs = '';
 		if (document.querySelector('#Form_Bookmarked') && settings.autobookmark == false)
 			document.querySelector('#Form_Bookmarked').checked = false;
 		await browser.storage.sync.set({ "settings": settings });
@@ -99,7 +103,9 @@ if (window.top == window.self) {
 	else if (titleBar) {
 		addCategoryListing(categoriesPromise);
 		menuItems();
-		moveBreadcrumbs();
+		let bcBox = document.querySelector('.BreadcrumbsBox');
+		if(bcBox)
+			bcBox.parentElement.classList.add('breadcrumb-container');
 	}
 
 	unboldReadDiscussions();
@@ -174,15 +180,10 @@ function titleBarObserver(mutationList, observer, categoriesPromise) {
 			observer.disconnect();
 		addCategoryListing(categoriesPromise);
 		menuItems();
-		moveBreadcrumbs();
+		let bcBox = document.querySelector('.BreadcrumbsBox');
+		if(bcBox)
+			bcBox.parentElement.classList.add('breadcrumb-container');
 	}
-}
-
-function moveBreadcrumbs() {
-	// needed for sticky header, puts the breadcrumbs within the header
-	let breadBox = document.querySelector('.Frame-row');
-	let header = document.querySelector('#titleBar');
-	header.appendChild(breadBox);
 }
 
 function menuItems() {
@@ -290,6 +291,7 @@ function settingsModal() {
 		content.appendChild(behaviours);
 		behaviours.innerHTML += '<p><input type="checkbox" id="settings-darkmode-28064212" /><label for="settings-darkmode-28064212">Dark Mode</label></p>';
 		behaviours.innerHTML += '<p><input type="checkbox" id="settings-stickyheader-28064212" /><label for="settings-stickyheader-28064212">Sticky Header</label></p>';
+		behaviours.innerHTML += '<p><input type="checkbox" id="settings-stickybreadcrumbs-28064212" /><label for="settings-stickybreadcrumbs-28064212">Sticky Breadcrumbs</label></p>';
 		behaviours.innerHTML += '<p><input type="checkbox" id="settings-autobookmark-28064212" /><label for="settings-autobookmark-28064212">Automatically set "Bookmark this discussion"</label></p>';
 		behaviours.innerHTML += '<p><input type="checkbox" id="settings-bookmarkbadge-28064212" /><label for="settings-bookmarkbadge-28064212">Display badge for unread bookmarks</label></p>';
 		behaviours.innerHTML += '<p><input type="checkbox" id="settings-keyboard-28064212" /><label for="settings-keyboard-28064212">Keyboard shortcuts</label></p>';
@@ -327,6 +329,17 @@ function settingsModal() {
 			await browser.storage.sync.set({ "settings": settings });
 		});
 
+		let stickybreadcrumbs = behaviours.querySelector('#settings-stickybreadcrumbs-28064212');
+		stickybreadcrumbs.checked = settings.stickybreadcrumbs;
+		stickybreadcrumbs.addEventListener('change', async function (e) {
+			settings.stickybreadcrumbs = stickybreadcrumbs.checked;
+			if (settings.stickybreadcrumbs)
+				document.body.dataset.stickybreadcrumbs = '';
+			else
+				delete document.body.dataset.stickybreadcrumbs;
+			await browser.storage.sync.set({ "settings": settings });
+		});
+
 		let autoBookmark = behaviours.querySelector('#settings-autobookmark-28064212');
 		autoBookmark.checked = settings.autobookmark;
 		autoBookmark.addEventListener('change', async function (e) {
@@ -340,7 +353,7 @@ function settingsModal() {
 		bookmarkBadge.checked = settings.bookmarkbadge;
 		bookmarkBadge.addEventListener('change', async function (e) {
 			settings.bookmarkbadge = bookmarkBadge.checked;
-			if(!settings.bookmarkbadge)
+			if (!settings.bookmarkbadge)
 				document.querySelector(".notification-badge-28064212").style.display = "none";
 			await browser.storage.sync.set({ "settings": settings });
 		});
@@ -362,7 +375,6 @@ function settingsModal() {
 				this.style.textDecoration = 'underline';
 			});
 		}
-
 		settingsModal.focus();
 	}
 }
