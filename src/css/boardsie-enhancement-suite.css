@@ -739,13 +739,13 @@ body:not([data-stickybreadcrumbs]) .breadcrumb-container {
 
 /* dark mode */
 
-body {
+html {
 	--bg: rgb(255, 255, 255);
 	--bg-userinfo: rgb(249, 249, 249);
 	--fg: rgb(51, 51, 51);
 	--fg-link: rgb(59, 85, 134);
 }
-body[data-theme='dark'] {
+html[data-theme='dark'] {
 	--bg: rgb(21, 32, 43);
 	--bg-userinfo: var(--bg);
 	--bg-quotes: rgb(37, 51, 65);
@@ -753,7 +753,7 @@ body[data-theme='dark'] {
 	--fg-dim: rgb(136, 153, 166);
 	--fg-link: rgb(27, 149, 224);
 }
-body[data-theme='dark'], body[data-theme='dark'] .Frame, body[data-theme='dark'] .postbit-postdetails, body[data-theme='dark'] .postbit-userinfo, body[data-theme='dark'] .postbit-postbody, body[data-theme='dark'] .Message.userContent, body[data-theme='dark'] .forum-threadlist-wrapper, body[data-theme='dark'] #themeFooter, body[data-theme='dark'] #homepage-tabs a, body[data-theme='dark'] .module-wrapper tbody .threadrow-container, body[data-theme='dark'] .forum-threadlist-wrapper tbody .forum-threadlist-lastpost, body[data-theme='dark'] .forum-threadlist-wrapper tbody .forum-threadlist-replies, body[data-theme='dark'] .forum-threadlist-wrapper tbody .forum-threadlist-views, body[data-theme='dark'] .generic-block-wrapper, body[data-theme='dark'] .MenuItems, body[data-theme='dark'] .NewCommentCount, body[data-theme='dark'] .richEditor-text {
+html[data-theme='dark'], html[data-theme='dark'] body, html[data-theme='dark'] .Frame, html[data-theme='dark'] .postbit-postdetails, html[data-theme='dark'] .postbit-userinfo, html[data-theme='dark'] .postbit-postbody, html[data-theme='dark'] .Message.userContent, html[data-theme='dark'] .forum-threadlist-wrapper, html[data-theme='dark'] #themeFooter, html[data-theme='dark'] #homepage-tabs a, html[data-theme='dark'] .module-wrapper tbody .threadrow-container, html[data-theme='dark'] .forum-threadlist-wrapper tbody .forum-threadlist-lastpost, html[data-theme='dark'] .forum-threadlist-wrapper tbody .forum-threadlist-replies, html[data-theme='dark'] .forum-threadlist-wrapper tbody .forum-threadlist-views, html[data-theme='dark'] .generic-block-wrapper, html[data-theme='dark'] .MenuItems, html[data-theme='dark'] .NewCommentCount, html[data-theme='dark'] .richEditor-text {
 	background-color: var(--bg) !important;
 	color: var(--fg) !important;
 }
@@ -766,28 +766,28 @@ body .Reactions span, body .Reactions a {
 	background: var(--fg-link) !important;
 	color: white !important;
 }
-body[data-theme='dark'] .module-wrapper tbody .threadrow-container-zebra td,
-body[data-theme='dark'] .module-wrapper th,
-body[data-theme='dark'] .Breadcrumbs, body[data-theme='dark'] .BreadcrumbsBox, body[data-theme='dark'] header .Frame-row,
-body[data-theme='dark'] .forum-threadlist-table th,
-body[data-theme='dark'] .Pager span, body[data-theme='dark'] .Pager .Highlight,
-body[data-theme='dark'] .DraftButton {
+html[data-theme='dark'] .module-wrapper tbody .threadrow-container-zebra td,
+html[data-theme='dark'] .module-wrapper th,
+html[data-theme='dark'] .Breadcrumbs, html[data-theme='dark'] .BreadcrumbsBox, html[data-theme='dark'] header .Frame-row,
+html[data-theme='dark'] .forum-threadlist-table th,
+html[data-theme='dark'] .Pager span, html[data-theme='dark'] .Pager .Highlight,
+html[data-theme='dark'] .DraftButton {
 	background-color: var(--bg-quotes) !important;
 	color: var(--fg) !important;
 }
-body[data-theme='dark'] .embedExternal, body[data-theme='dark'] .embedExternal [class*="quoteEmbed"], body[data-theme='dark'] .embedExternal [class*="quoteEmbed"] .userContent p, body[data-theme='dark'] .embedExternal [class*="collapsableContent"], body[data-theme='dark'] .richEditor-frame, body[data-theme='dark'] .richEditor-menuItem button {
+html[data-theme='dark'] .embedExternal, html[data-theme='dark'] .embedExternal [class*="quoteEmbed"], html[data-theme='dark'] .embedExternal [class*="quoteEmbed"] .userContent p, html[data-theme='dark'] .embedExternal [class*="collapsableContent"], html[data-theme='dark'] .richEditor-frame, html[data-theme='dark'] .richEditor-menuItem button {
 	background-color: var(--bg-quotes) !important;
 	color: var(--fg) !important;
 }
-body[data-theme='dark'] a:not(.ReactButton), body[data-theme='dark'] a:not(.original-poster-28064212) .usertitle-28064212 {
+html[data-theme='dark'] a:not(.ReactButton), html[data-theme='dark'] a:not(.original-poster-28064212) .usertitle-28064212 {
 	color: var(--fg-link) !important;
 }
-body[data-theme='dark'] td, body[data-theme='dark'] table {
+html[data-theme='dark'] td, html[data-theme='dark'] table {
 	border-color: var(--fg-dim) !important;
 }
-body[data-theme='dark'] .postcount {
+html[data-theme='dark'] .postcount {
 	color: var(--fg) !important;
 }
-body[data-theme='dark'] #titleBar a, body[data-theme='dark'] .Breadcrumbs a, body[data-theme='dark'] .ButtonGroup a, body[data-theme='dark'] .Tag-Sticky, body[data-theme='dark'] .timestamp-wrapper {
+html[data-theme='dark'] #titleBar a, html[data-theme='dark'] .Breadcrumbs a, html[data-theme='dark'] .ButtonGroup a, html[data-theme='dark'] .Tag-Sticky, html[data-theme='dark'] .timestamp-wrapper {
 	color: inherit !important;
 }

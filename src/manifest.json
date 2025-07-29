@@ -24,12 +24,21 @@
 			"matches": [
 				"*://*.boards.ie/*"
 			],
+			"run_at": "document_start",
 			"js": [
-				"js/browser-polyfill.min.js",
-				"js/boardsie-enhancement-suite.js"
+				"js/boardsie-enhancement-suite-dark-mode.js"
 			],
 			"css": [
 				"css/boardsie-enhancement-suite.css"
+			]
+		},
+		{
+			"matches": [
+				"*://*.boards.ie/*"
+			],
+			"js": [
+				"js/browser-polyfill.min.js",
+				"js/boardsie-enhancement-suite.js"
 			]
 		}
 	]

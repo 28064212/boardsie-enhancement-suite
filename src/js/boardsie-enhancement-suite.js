@@ -33,8 +33,8 @@ if (window.top == window.self) {
 
 		if (settings.keyboard)
 			window.addEventListener('keydown', keyShortcuts, true);
-		if (settings.darkmode)
-			document.body.dataset.theme = 'dark';
+		// if (settings.darkmode) // moved to separate file to load earlier
+		// 	document.body.dataset.theme = 'dark';
 		if (settings.stickyheader)
 			document.body.dataset.stickyheader = '';
 		if (settings.stickybreadcrumbs)
