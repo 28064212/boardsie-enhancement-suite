@@ -1599,7 +1599,7 @@ function keyShortcuts(key) {
 		}
 		else if (code == 65 || code == 90) {
 			// a/z - navigate categories/discussions
-			let list = document.querySelectorAll('.forum-threadlist-table tbody tr, .tabs-container div[style="display: block;"] .module-wrapper tbody tr, .ItemComment, .ItemDiscussion, .Profile .DataList .Item');
+			let list = document.querySelectorAll('.forum-threadlist-table > tbody > tr, .tabs-container div[style="display: block;"] .module-wrapper tbody tr, .ItemComment, .ItemDiscussion, .Profile .DataList .Item');
 			if (list.length > 0) {
 				if (hl) {
 					hl.classList.remove('highlight-28064212');
