@@ -5,150 +5,149 @@ let userDetails;
 let api = "https://www.boards.ie/api/v2/";
 const version = '0.3.4';
 
-if (window.top == window.self) {
-	try {
-		document.querySelector('#themeFooter').shadowRoot.querySelector('.footer').style.background = "inherit";
-		document.querySelector('#themeFooter').shadowRoot.querySelector('.footer').style.color = "inherit";
-		if (!(location.pathname == '/' || location.pathname.startsWith("/profile/edit/")))
-			document.querySelector('.Panel.Panel-main').style.display = "none";
-	} catch (e) { }
+try {
+	document.querySelector('#themeFooter').shadowRoot.querySelector('.footer').style.background = "inherit";
+	document.querySelector('#themeFooter').shadowRoot.querySelector('.footer').style.color = "inherit";
+	if (!(location.pathname == '/' || location.pathname.startsWith("/profile/edit/")))
+		document.querySelector('.Panel.Panel-main').style.display = "none";
+} catch (e) { }
 
-	(async () => {
-		storage = await browser.storage.sync.get();
-		settings = storage.settings;
-		if (settings === undefined)
-			settings = {};
-		if (settings.autobookmark === undefined)
-			settings.autobookmark = true;
-		if (settings.keyboard === undefined)
-			settings.keyboard = true;
-		if (settings.darkmode === undefined)
-			settings.darkmode = false;
-		if (settings.stickyheader === undefined)
-			settings.stickyheader = false;
-		if (settings.stickybreadcrumbs === undefined)
-			settings.stickybreadcrumbs = false;
-		if (settings.bookmarkbadge === undefined)
-			settings.bookmarkbadge = true;
+(async () => {
+	storage = await browser.storage.sync.get();
+	settings = storage.settings;
+	if (settings === undefined)
+		settings = {};
+	if (settings.autobookmark === undefined)
+		settings.autobookmark = true;
+	if (settings.keyboard === undefined)
+		settings.keyboard = true;
+	if (settings.darkmode === undefined)
+		settings.darkmode = false;
+	if (settings.stickyheader === undefined)
+		settings.stickyheader = false;
+	if (settings.stickybreadcrumbs === undefined)
+		settings.stickybreadcrumbs = false;
+	if (settings.bookmarkbadge === undefined)
+		settings.bookmarkbadge = true;
 
-		if (settings.keyboard)
-			window.addEventListener('keydown', keyShortcuts, true);
-		// if (settings.darkmode) // moved to separate file to load earlier
-		// 	document.body.dataset.theme = 'dark';
-		if (settings.stickyheader)
-			document.body.dataset.stickyheader = '';
-		if (settings.stickybreadcrumbs)
-			document.body.dataset.stickybreadcrumbs = '';
-		if (document.querySelector('#Form_Bookmarked') && settings.autobookmark == false)
-			document.querySelector('#Form_Bookmarked').checked = false;
-		await browser.storage.sync.set({ "settings": settings });
-	})();
+	if (settings.keyboard)
+		window.addEventListener('keydown', keyShortcuts, true);
+	// if (settings.darkmode) // moved to separate file to load earlier
+	// 	document.body.dataset.theme = 'dark';
+	if (settings.stickyheader)
+		document.body.dataset.stickyheader = '';
+	if (settings.stickybreadcrumbs)
+		document.body.dataset.stickybreadcrumbs = '';
+	if (document.querySelector('#Form_Bookmarked') && settings.autobookmark == false)
+		document.querySelector('#Form_Bookmarked').checked = false;
+	await browser.storage.sync.set({ "settings": settings });
+})();
 
-	// let categories1Promise = fetch(api + 'categories/?limit=500&outputFormat=flat')
-	// 	.then(response => {
-	// 		if (response.ok)
-	// 			return response.json();
-	// 		else
-	// 			throw new Error(response.statusText);
-	// 	});
-	// let categories2Promise = fetch(api + 'categories/?limit=500&outputFormat=flat&page=2')
-	// 	.then(response => {
-	// 		if (response.ok)
-	// 			return response.json();
-	// 		else
-	// 			throw new Error(response.statusText);
-	// 	});
+// let categories1Promise = fetch(api + 'categories/?limit=500&outputFormat=flat')
+// 	.then(response => {
+// 		if (response.ok)
+// 			return response.json();
+// 		else
+// 			throw new Error(response.statusText);
+// 	});
+// let categories2Promise = fetch(api + 'categories/?limit=500&outputFormat=flat&page=2')
+// 	.then(response => {
+// 		if (response.ok)
+// 			return response.json();
+// 		else
+// 			throw new Error(response.statusText);
+// 	});
 
-	// let categoriesPromise = Promise.all([categories1Promise, categories2Promise])
-	// 	.then(data => {
-	// 		let categories = [];
-	// 		let order = 0;
-	// 		for (let d of data[0]) {
-	// 			categories.push({ "id": d.categoryID, "parent": d.parentCategoryID, "name": d.name, "slug": d.urlcode, "followed": d.followed, "depth": d.depth, "url": d.url, "order": order });
-	// 			order += 1;
-	// 		}
-	// 		for (let d of data[1]) {
-	// 			categories.push({ "id": d.categoryID, "parent": d.parentCategoryID, "name": d.name, "slug": d.urlcode, "followed": d.followed, "depth": d.depth, "url": d.url, "order": order });
-	// 			order += 1;
-	// 		}
-	// 		return categories;
-	// 	})
-	// 	.catch(e => console.log(e));
+// let categoriesPromise = Promise.all([categories1Promise, categories2Promise])
+// 	.then(data => {
+// 		let categories = [];
+// 		let order = 0;
+// 		for (let d of data[0]) {
+// 			categories.push({ "id": d.categoryID, "parent": d.parentCategoryID, "name": d.name, "slug": d.urlcode, "followed": d.followed, "depth": d.depth, "url": d.url, "order": order });
+// 			order += 1;
+// 		}
+// 		for (let d of data[1]) {
+// 			categories.push({ "id": d.categoryID, "parent": d.parentCategoryID, "name": d.name, "slug": d.urlcode, "followed": d.followed, "depth": d.depth, "url": d.url, "order": order });
+// 			order += 1;
+// 		}
+// 		return categories;
+// 	})
+// 	.catch(e => console.log(e));
 
-	let categoriesPromise = fetch(api + 'categories/?maxDepth=100&outputFormat=tree')
-		.then(response => {
-			if (response.ok)
-				return response.json();
-			else
-				throw new Error(response.statusText);
-		})
-		.then(data => {
-			let categories = [];
-			flattenCategories(data, categories);
-			let order = 0;
-			for (let c of categories) {
-				c.order = order;
-				order += 1;
-			}
-			return categories;
-		})
-		.catch(e => console.log(e));
-
-	let titleBar = document.querySelector('#titleBar');
-	if (titleBar && titleBar.innerHTML == "") {
-		// some pages load titlebar contents lazily
-		let observer = new MutationObserver(function (mutationsList, observer) { titleBarObserver(mutationsList, observer, categoriesPromise) });
-		observer.observe(titleBar, { childList: true });
-	}
-	else if (titleBar) {
-		addCategoryListing(categoriesPromise);
-		menuItems();
-		let bcBox = document.querySelector('.BreadcrumbsBox');
-		if(bcBox)
-			bcBox.parentElement.classList.add('breadcrumb-container');
-	}
-
-	unboldReadDiscussions();
-	highlightOP();
-	restoreOPAvatar();
-	removeExternalLinkCheck();
-	addThanksAfterPosts();
-	addDiscussionPreviews();
-	let homeTabs = document.querySelector('#homepage-tabs');
-	if (homeTabs) {
-		for (let t of homeTabs.querySelectorAll('li')) {
-			t.addEventListener('click', function () {
-				addDiscussionPreviews();
-			});
+let categoriesPromise = fetch(api + 'categories/?maxDepth=100&outputFormat=tree')
+	.then(response => {
+		if (response.ok)
+			return response.json();
+		else
+			throw new Error(response.statusText);
+	})
+	.then(data => {
+		let categories = [];
+		flattenCategories(data, categories);
+		let order = 0;
+		for (let c of categories) {
+			c.order = order;
+			order += 1;
 		}
-	}
-	userMenus();
-	addMarkReadButton();
-	//editableQuoting();
-	modsInfo(categoriesPromise);
-	userHistory(categoriesPromise);
-	window.addEventListener('hashchange', function () {
-		userHistory(categoriesPromise);
-	});
-	markCategoriesRead(categoriesPromise);
+		return categories;
+	})
+	.catch(e => console.log(e));
 
-	addBookmarkStatusToComments();
-	let profileComments = document.querySelector('.Profile .Comments.DataList');
-	if (profileComments) {
-		let observer = new MutationObserver(addBookmarkStatusToComments);
-		observer.observe(profileComments, { childList: true, subtree: false });
-	}
-
-	userDetails = fetch(api + "users/me")
-		.then(response => {
-			if (response.ok)
-				return response.json();
-			else
-				throw new Error(response.statusText);
-		})
-		.catch(e => console.log(e));
+let titleBar = document.querySelector('#titleBar');
+if (titleBar && titleBar.innerHTML == "") {
+	// some pages load titlebar contents lazily
+	let observer = new MutationObserver(function (mutationsList, observer) { titleBarObserver(mutationsList, observer, categoriesPromise) });
+	observer.observe(titleBar, { childList: true });
+}
+else if (titleBar) {
+	addCategoryListing(categoriesPromise);
+	menuItems();
+	let bcBox = document.querySelector('.BreadcrumbsBox');
+	if (bcBox)
+		bcBox.parentElement.classList.add('breadcrumb-container');
 }
 
+unboldReadDiscussions();
+highlightOP();
+restoreOPAvatar();
+removeExternalLinkCheck();
+addThanksAfterPosts();
+addDiscussionPreviews();
+let homeTabs = document.querySelector('#homepage-tabs');
+if (homeTabs) {
+	for (let t of homeTabs.querySelectorAll('li')) {
+		t.addEventListener('click', function () {
+			addDiscussionPreviews();
+		});
+	}
+}
+userMenus();
+addMarkReadButton();
+//editableQuoting();
+modsInfo(categoriesPromise);
+userHistory(categoriesPromise);
+window.addEventListener('hashchange', function () {
+	userHistory(categoriesPromise);
+});
+markCategoriesRead(categoriesPromise);
+
+addBookmarkStatusToComments();
+let profileComments = document.querySelector('.Profile .Comments.DataList');
+if (profileComments) {
+	let observer = new MutationObserver(addBookmarkStatusToComments);
+	observer.observe(profileComments, { childList: true, subtree: false });
+}
+
+userDetails = fetch(api + "users/me")
+	.then(response => {
+		if (response.ok)
+			return response.json();
+		else
+			throw new Error(response.statusText);
+	})
+	.catch(e => console.log(e));
+
+// functions
 function flattenCategories(data, categories) {
 	if (Array.isArray(data)) {
 		for (let d of data) {
@@ -181,7 +180,7 @@ function titleBarObserver(mutationList, observer, categoriesPromise) {
 		addCategoryListing(categoriesPromise);
 		menuItems();
 		let bcBox = document.querySelector('.BreadcrumbsBox');
-		if(bcBox)
+		if (bcBox)
 			bcBox.parentElement.classList.add('breadcrumb-container');
 	}
 }
