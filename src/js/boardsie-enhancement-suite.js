@@ -1733,10 +1733,10 @@ function keyShortcuts(key) {
 		}
 		else if (!ctrl && code == 82) {
 			// r - reply to discussion/post new discussion
-			if (document.querySelector('.richEditor-text, .richEditor')) {
+			if (document.querySelector('#vanilla-editor-focus-context')) {
 				key.preventDefault();
-				document.querySelector('.richEditor-text, .richEditor').focus();
-				document.querySelector('.richEditor-text, .richEditor').scrollIntoView();
+				document.querySelector('#vanilla-editor-focus-context').firstElementChild.focus();
+				document.querySelector('#vanilla-editor-focus-context').firstElementChild.scrollIntoView();
 			}
 			else if (document.querySelector(".BoxNewDiscussion a"))
 				document.querySelector(".BoxNewDiscussion a").click();
