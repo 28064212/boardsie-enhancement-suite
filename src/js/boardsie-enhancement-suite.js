@@ -311,9 +311,9 @@ function settingsModal() {
 		darkmode.addEventListener('change', async function (e) {
 			settings.darkmode = darkmode.checked;
 			if (settings.darkmode)
-				document.body.dataset.theme = 'dark';
+				document.documentElement.dataset.theme = 'dark';
 			else
-				delete document.body.dataset.theme;
+				delete document.documentElement.dataset.theme;
 			await browser.storage.sync.set({ "settings": settings });
 		});
 
