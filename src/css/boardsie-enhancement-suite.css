@@ -749,11 +749,12 @@ html[data-theme='dark'] {
 	--bg: rgb(21, 32, 43);
 	--bg-userinfo: var(--bg);
 	--bg-quotes: rgb(37, 51, 65);
+	--bg-code: rgb(57, 81, 90);
 	--fg: rgb(221, 221, 221);
 	--fg-dim: rgb(136, 153, 166);
 	--fg-link: rgb(27, 149, 224);
 }
-html[data-theme='dark'], html[data-theme='dark'] body, html[data-theme='dark'] .Frame, html[data-theme='dark'] .postbit-postdetails, html[data-theme='dark'] .postbit-userinfo, html[data-theme='dark'] .postbit-postbody, html[data-theme='dark'] .Message.userContent, html[data-theme='dark'] .forum-threadlist-wrapper, html[data-theme='dark'] #themeFooter, html[data-theme='dark'] #homepage-tabs a, html[data-theme='dark'] .module-wrapper tbody .threadrow-container, html[data-theme='dark'] .forum-threadlist-wrapper tbody .forum-threadlist-lastpost, html[data-theme='dark'] .forum-threadlist-wrapper tbody .forum-threadlist-replies, html[data-theme='dark'] .forum-threadlist-wrapper tbody .forum-threadlist-views, html[data-theme='dark'] .generic-block-wrapper, html[data-theme='dark'] .MenuItems, html[data-theme='dark'] .NewCommentCount, html[data-theme='dark'] .richEditor-text {
+html[data-theme='dark'], html[data-theme='dark'] body, html[data-theme='dark'] .Frame, html[data-theme='dark'] .postbit-postdetails, html[data-theme='dark'] .postbit-userinfo, html[data-theme='dark'] .postbit-postbody, html[data-theme='dark'] .Message.userContent, html[data-theme='dark'] .forum-threadlist-wrapper, html[data-theme='dark'] #themeFooter, html[data-theme='dark'] #homepage-tabs a, html[data-theme='dark'] .module-wrapper tbody .threadrow-container, html[data-theme='dark'] .forum-threadlist-wrapper tbody .forum-threadlist-lastpost, html[data-theme='dark'] .forum-threadlist-wrapper tbody .forum-threadlist-replies, html[data-theme='dark'] .forum-threadlist-wrapper tbody .forum-threadlist-views, html[data-theme='dark'] .generic-block-wrapper, html[data-theme='dark'] .MenuItems, html[data-theme='dark'] .NewCommentCount, html[data-theme='dark'] .richEditor-text, html[data-theme='dark'] .richEditor, html[data-theme='dark'] #vanilla-editor-root, html[data-theme='dark'] .richEditor [class*='VanillaEditorContainer-baseStyles'], html[data-theme='dark'] .PageTitle h1, html[data-theme='dark'] .CommentOptions label, html[data-theme='dark'] .WarningMessage {
 	background-color: var(--bg) !important;
 	color: var(--fg) !important;
 }
@@ -779,15 +780,30 @@ html[data-theme='dark'] .embedExternal, html[data-theme='dark'] .embedExternal [
 	background-color: var(--bg-quotes) !important;
 	color: var(--fg) !important;
 }
-html[data-theme='dark'] a:not(.ReactButton), html[data-theme='dark'] a:not(.original-poster-28064212) .usertitle-28064212 {
+html[data-theme='dark'] a:not(.ReactButton, .post-link, .Permalink), html[data-theme='dark'] a:not(.original-poster-28064212) .usertitle-28064212 {
 	color: var(--fg-link) !important;
 }
 html[data-theme='dark'] td, html[data-theme='dark'] table {
 	border-color: var(--fg-dim) !important;
 }
-html[data-theme='dark'] .postcount {
+html[data-theme='dark'] .postcount,
+html[data-theme='dark'] .pageHeadingBox .H,
+html[data-theme='dark'] .richEditor [class*='VanillaEditor-classes-root'],
+html[data-theme='dark'] .userContent .blockquote,
+html[data-theme='dark'] .userContent .embedText-body,
+html[data-theme='dark'] .userContent .embedText-body h2.heading,
+html[data-theme='dark'] .userContent .embedText-body span,
+html[data-theme='dark'] .userContent .embedText-body div {
 	color: var(--fg) !important;
 }
 html[data-theme='dark'] #titleBar a, html[data-theme='dark'] .Breadcrumbs a, html[data-theme='dark'] .ButtonGroup a, html[data-theme='dark'] .Tag-Sticky, html[data-theme='dark'] .timestamp-wrapper {
 	color: inherit !important;
+}
+html[data-theme='dark'] .userContent code.code.codeInline {
+	background-color: var(--bg-code) !important;
+	color: var(--fg) !important;
+}
+html[data-theme='dark'] .userContent a.embedLink-link {
+	background-color: var(--bg-code) !important;
+	color: var(--fg-link) !important;
 }
