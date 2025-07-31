@@ -26,6 +26,7 @@
 			],
 			"run_at": "document_start",
 			"js": [
+				"js/browser-polyfill.min.js",
 				"js/boardsie-enhancement-suite-dark-mode.js"
 			],
 			"css": [
@@ -37,7 +38,6 @@
 				"*://*.boards.ie/*"
 			],
 			"js": [
-				"js/browser-polyfill.min.js",
 				"js/boardsie-enhancement-suite.js"
 			]
 		}
