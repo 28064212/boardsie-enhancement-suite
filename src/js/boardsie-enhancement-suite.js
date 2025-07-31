@@ -3,7 +3,7 @@ let showpreviews = false;
 let settings = {};
 let userDetails;
 let api = "https://www.boards.ie/api/v2/";
-const version = '0.3.5';
+const version = '0.3.6';
 
 try {
 	document.querySelector('#themeFooter').shadowRoot.querySelector('.footer').style.background = "inherit";
